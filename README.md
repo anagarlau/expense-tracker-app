@@ -8,3 +8,4 @@ Funktionalitäten:
 - User kann Transaktionen erstellen, einsehen, löschen, bearbeiten
 - User kann nachvollziehen, ob das Budget überzogen wurde
 
+[vue3 apexcharts.js]
