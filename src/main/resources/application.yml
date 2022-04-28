@@ -7,22 +7,22 @@ spring:
     password: ${DATASOURCE_PASSWORD}
     url: ${DATASOURCE_URL}
 
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 5
   jpa:
     properties:
       hibernate:
         # The SQL dialect makes Hibernate generate better SQL for the chosen database
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.MySQLDialect
         jdbc:
           time_zone: UTC
     show-sql: false # Set true for debugging - Shows SQL Queries!
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update # (DB table structure actualization) options:create, create-drop, validate, update-)
+      ddl-auto: validate # (DB table structure actualization) options:create, create-drop, validate, update-)
     open-in-view: false
   sql:
     init:
-      platform: postgres
+      platform: mysql
       mode: always

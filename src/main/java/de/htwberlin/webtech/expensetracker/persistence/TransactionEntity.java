@@ -12,12 +12,12 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "transaction" )
+//@Entity(name = "transaction" )
 public class TransactionEntity {
     //add validation
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY, generator = "native")
-    @GenericGenerator(name="native", strategy = "native")
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+
     private Long tid;
 
 
