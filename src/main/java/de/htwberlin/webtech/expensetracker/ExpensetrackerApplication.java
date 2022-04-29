@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 //@EnableJpaRepositories("de.htwberlin.webtech.expensetracker.web")
-@EntityScan("de.htwberlin.webtech.expensetracker.*")
+//@EntityScan("de.htwberlin.webtech.expensetracker.*")
 
 public class ExpensetrackerApplication {
 

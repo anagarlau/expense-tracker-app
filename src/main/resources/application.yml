@@ -15,12 +15,13 @@ spring:
       hibernate:
         # The SQL dialect makes Hibernate generate better SQL for the chosen database
         dialect: org.hibernate.dialect.MySQLDialect
+       # use-new-id-generator-mappings: false
         jdbc:
           time_zone: UTC
     show-sql: false # Set true for debugging - Shows SQL Queries!
     database-platform: org.hibernate.dialect.MySQLDialect
-#    hibernate:
-#      ddl-auto: validate # (DB table structure actualization) options:create, create-drop, validate, update-)
+    hibernate:
+      ddl-auto: update # (DB table structure actualization) options:create, create-drop, validate, update-)
     open-in-view: false
   sql:
     init:
