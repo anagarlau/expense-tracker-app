@@ -21,7 +21,7 @@ spring:
     show-sql: false # Set true for debugging - Shows SQL Queries!
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update # (DB table structure actualization) options:create, create-drop, validate, update-)
+      ddl-auto: validate # (DB table structure actualization) options:create, create-drop, validate, update-)
     open-in-view: false
   sql:
     init:
