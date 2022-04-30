@@ -6,31 +6,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Expense extends BaseEntityModel {
+
+public class ExpenseManipulationRequest {
 
 
-    private Long tid;
+    private String expenseName;
 
-    private Category category;
-
-    private String transactionName;
-
-    private LocalDate expenseDate;
+    private Long cid;
 
     private String description;
 
-    private BigDecimal transactionTotal;
+    private LocalDate expenseDate;
+    private BigDecimal expenseTotal;
 
     private Boolean regretted;
+
+
 
 }
