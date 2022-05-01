@@ -11,20 +11,24 @@ import de.htwberlin.webtech.expensetracker.web.model.Expense;
 import de.htwberlin.webtech.expensetracker.web.model.ExpenseManipulationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+
 public class ExpenseService {
     private ExpenseRepository expenseRepository;
     private CategoryRepository categoryRepository;
 
+
     @Autowired
-    public ExpenseService(ExpenseRepository expenseRepository, CategoryRepository categoryRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository, CategoryRepository categoryRepository ) {
         this.expenseRepository = expenseRepository;
         this.categoryRepository = categoryRepository;
+
     }
 
     public List<Expense> findAll() {
@@ -34,10 +38,17 @@ public class ExpenseService {
     }
 
     public Expense createExpense(ExpenseManipulationRequest expenseRequest) {
-        ExpenseEntity expenseEntity = this.mapToExpenseEntity(expenseRequest);
-        ExpenseEntity savedExpense = this.expenseRepository.save(expenseEntity);
-        if (savedExpense != null && savedExpense.getTid() > 0) return mapToExpense(savedExpense);
-        else return null;
+
+        Optional<CategoryEntity> categoryById = this.categoryRepository.findById(expenseRequest.getCid());
+        if(categoryById.isEmpty()){
+                return null;
+
+        }
+            ExpenseEntity expenseEntity = new ExpenseEntity(categoryById.get(), expenseRequest.getExpenseName(), expenseRequest.getDescription(), expenseRequest.getExpenseTotal(), expenseRequest.getExpenseDate(), expenseRequest.getRegretted());
+            ExpenseEntity savedExpense = this.expenseRepository.save(expenseEntity);
+            if (savedExpense != null && savedExpense.getTid() > 0) return mapToExpense(savedExpense);
+            else return null;
+
     }
 
 
@@ -68,28 +79,27 @@ public class ExpenseService {
     }
 
 
-    public ExpenseEntity mapToExpenseEntity(Expense expenseRequest) {
-        CategoryEntity category = new CategoryEntity(expenseRequest.getCategory().getCid(), expenseRequest.getCategory().getCategoryName());
-          return new ExpenseEntity(category,expenseRequest.getTransactionName(), expenseRequest.getDescription(), expenseRequest.getTransactionTotal(), expenseRequest.getExpenseDate(),false );
-    }
+
+
+
 
     public ExpenseEntity mapToExpenseEntity(ExpenseManipulationRequest expense ) {
         Optional<CategoryEntity> categoryById = categoryRepository.findById(expense.getCid());
          if(categoryById.isPresent()){
             return new ExpenseEntity(categoryById.get(), expense.getExpenseName(), expense.getDescription(), expense.getExpenseTotal(),expense.getExpenseDate(),expense.getRegretted());
         }else{
-            throw new IllegalCategoryException("No such category found");
+             System.out.println("hi from mapToExpenseEntity");
+           return null;
         }
 
     }
 
+
     public Expense mapToExpense(ExpenseEntity expense) {
-        Optional<CategoryEntity> categoryById = categoryRepository.findById(expense.getCategory().getCid());
-        if(categoryById.isPresent()){
-            return new Expense(expense.getTid(),new Category(expense.getCategory().getCid(), expense.getCategory().getCategoryName()),expense.getExpenseName(), expense.getExpenseDate(),expense.getDescription(), expense.getExpenseTotal(), expense.getRegretted());
-        }else{
-            throw new IllegalCategoryException("No such category found");
-        }
+
+        Category cat = new Category( expense.getCategory().getCid(), expense.getCategory().getCategoryName(), expense.getCategory().getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList()));
+
+        return new Expense(expense.getTid(),cat,expense.getExpenseName(), expense.getExpenseDate(), expense.getDescription(),expense.getExpenseTotal(), expense.getRegretted());
 
     }
 

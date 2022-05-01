@@ -24,9 +24,11 @@ public class ExpenseManipulationRequest {
     private String description;
 
     private LocalDate expenseDate;
+
     private BigDecimal expenseTotal;
 
     private Boolean regretted;
+
 
 
 

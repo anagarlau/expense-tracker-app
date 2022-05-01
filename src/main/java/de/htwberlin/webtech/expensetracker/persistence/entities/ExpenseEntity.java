@@ -1,5 +1,6 @@
 package de.htwberlin.webtech.expensetracker.persistence.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 
@@ -17,9 +18,10 @@ import java.time.LocalDateTime;
 @Table(name="transaction")
 public class ExpenseEntity extends BaseEntity {
     //table dependencies
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, targetEntity = CategoryEntity.class)
+
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name="cid", referencedColumnName = "cid", nullable = false)
-    private CategoryEntity category;
+     private CategoryEntity category;
 
     //add validation
     @Id

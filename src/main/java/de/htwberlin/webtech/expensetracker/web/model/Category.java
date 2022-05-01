@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -15,17 +19,8 @@ import java.util.Set;
 public class Category extends BaseEntityModel{
 
     private Long cid;
-
-    private Set<Expense> expense;
     private String categoryName;
+    private List<Long> expenses= new ArrayList<>();
 
-    public Category(Long cid, String categoryName) {
-        this.cid = cid;
-        this.categoryName = categoryName;
-    }
 
-    public Category(String categoryName) {
-
-        this.categoryName = categoryName;
-    }
 }

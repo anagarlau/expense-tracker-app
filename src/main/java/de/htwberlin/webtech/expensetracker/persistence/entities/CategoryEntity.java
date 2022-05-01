@@ -1,10 +1,12 @@
 package de.htwberlin.webtech.expensetracker.persistence.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,20 +20,17 @@ public class CategoryEntity extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
 
-    @Column(name = "category_name")
+    @Column
     private String categoryName;
 
-//    @ManyToOne(mappedBy = "category")
-//    private Set<ExpenseEntity> expense;
+    // @OneToMany( mappedBy = "category")
+    //@JsonBackReference
+    @OneToMany(fetch = FetchType.EAGER, mappedBy ="category")
+    private List<ExpenseEntity> expenses = new ArrayList<>();
 
-    public CategoryEntity(  String categoryName) {
+    public CategoryEntity( String categoryName) {
         this.categoryName = categoryName;
     }
-
-//    public CategoryEntity( Long cid, String categoryName) {
-//        this.categoryName = categoryName;
-//        this.cid = cid;
-//    }
 
 
 }

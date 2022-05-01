@@ -1,5 +1,6 @@
 package de.htwberlin.webtech.expensetracker.web.service;
 
+import de.htwberlin.webtech.expensetracker.exceptions.IllegalCategoryException;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
 import de.htwberlin.webtech.expensetracker.persistence.entities.ExpenseEntity;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
@@ -37,19 +38,25 @@ public class CategoryService {
 
 
     public Category createCategory(CategoryManipulationRequest categoryRequest) {
-        CategoryEntity categoryEntity = this.mapToCategoryEntity(categoryRequest) ;
-        CategoryEntity savedCategory = this.categoryRepository.save(categoryEntity);
-        System.out.println(savedCategory.getCid());
-        System.out.println( mapToCategory(savedCategory).getCid());
-        if (savedCategory != null && savedCategory.getCid() > 0) return mapToCategory(savedCategory);
+       // CategoryEntity categoryEntity = this.mapToCategoryEntity(categoryRequest) ;
+        CategoryEntity savedCategory = this.categoryRepository.save(new CategoryEntity(categoryRequest.getCategoryName()));
+
+        if (savedCategory.getCid() > 0) return mapToCategory(savedCategory);
         else return null;
     }
 
-    private Category mapToCategory(CategoryEntity categoryEntity){
-        return new Category(categoryEntity.getCid() ,categoryEntity.getCategoryName());
+    public Category mapToCategory(CategoryEntity categoryEntity){
+        List<Long> expensesIds = categoryEntity.getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList());
+        return new Category(categoryEntity.getCid(), categoryEntity.getCategoryName(), expensesIds);
     }
 
     private CategoryEntity mapToCategoryEntity(CategoryManipulationRequest categoryReq){
-        return new CategoryEntity(categoryReq.getCategoryName());
+        CategoryEntity categoryByName = this.categoryRepository.findByCategoryName(categoryReq.getCategoryName());
+        if(categoryByName != null){
+            return categoryByName;
+        }else{
+            throw  new IllegalCategoryException("No such Category in DB");
+        }
+
     }
 }
