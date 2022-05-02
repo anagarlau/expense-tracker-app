@@ -1,13 +1,10 @@
 package de.htwberlin.webtech.expensetracker.web.service;
 
-import de.htwberlin.webtech.expensetracker.exceptions.IllegalCategoryException;
+import de.htwberlin.webtech.expensetracker.exceptions.ResourceNotFound;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
-import de.htwberlin.webtech.expensetracker.persistence.entities.ExpenseEntity;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
 import de.htwberlin.webtech.expensetracker.web.model.Category;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest;
-import de.htwberlin.webtech.expensetracker.web.model.Expense;
-import de.htwberlin.webtech.expensetracker.web.model.ExpenseManipulationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +52,7 @@ public class CategoryService {
         if(categoryByName != null){
             return categoryByName;
         }else{
-            throw  new IllegalCategoryException("No such Category in DB");
+            throw  new ResourceNotFound("No such Category in DB");
         }
 
     }

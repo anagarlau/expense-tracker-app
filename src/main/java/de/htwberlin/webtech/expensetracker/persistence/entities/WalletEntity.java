@@ -9,7 +9,9 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,12 +23,12 @@ public class WalletEntity extends BaseEntity{
 
 
     //dependency to expense
-    @OneToMany(mappedBy ="wallet", targetEntity = ExpenseEntity.class)
-    private List<ExpenseEntity> expenses = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy ="wallet", targetEntity = ExpenseEntity.class)
+    private Set<ExpenseEntity> expenses = new HashSet<>();
 
     //dependency to income
-    @OneToMany( mappedBy ="wallet", targetEntity = IncomeEntity.class)
-    private List<IncomeEntity> incomes = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy ="wallet", targetEntity = IncomeEntity.class)
+    private Set<IncomeEntity> incomes = new HashSet<>();
 
 
     @Id
@@ -45,11 +47,12 @@ public class WalletEntity extends BaseEntity{
     private LocalDate validUntil;
 
     public WalletEntity(String walletName, BigDecimal balance, LocalDate validFrom, LocalDate validUntil) {
-        this.expenses = expenses;
-        this.incomes = incomes;
+
         this.walletName = walletName;
         this.balance = balance;
         this.validFrom = validFrom;
         this.validUntil = validUntil;
     }
+
+
 }

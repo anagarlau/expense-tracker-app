@@ -1,21 +1,21 @@
 package de.htwberlin.webtech.expensetracker.web.service;
 
 
-import de.htwberlin.webtech.expensetracker.exceptions.IllegalCategoryException;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
 import de.htwberlin.webtech.expensetracker.persistence.entities.ExpenseEntity;
 import de.htwberlin.webtech.expensetracker.persistence.entities.WalletEntity;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
 import de.htwberlin.webtech.expensetracker.persistence.repository.ExpenseRepository;
 import de.htwberlin.webtech.expensetracker.persistence.repository.WalletRepository;
+import de.htwberlin.webtech.expensetracker.utils.DateUtils;
 import de.htwberlin.webtech.expensetracker.web.model.Category;
 import de.htwberlin.webtech.expensetracker.web.model.Expense;
 import de.htwberlin.webtech.expensetracker.web.model.ExpenseManipulationRequest;
 import de.htwberlin.webtech.expensetracker.web.model.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,13 +43,15 @@ public class ExpenseService {
     }
 
     public Expense createExpense(ExpenseManipulationRequest expenseRequest) {
+        Optional<CategoryEntity> categoryById = expenseRequest.getCid() == null ? Optional.empty() : this.categoryRepository.findById(expenseRequest.getCid());
+        Optional<WalletEntity> walletById = expenseRequest.getWid() == null ? Optional.empty() : this.walletRepository.findById(expenseRequest.getWid());
 
-        Optional<CategoryEntity> categoryById = this.categoryRepository.findById(expenseRequest.getCid());
-        Optional<WalletEntity> walletById = this.walletRepository.findById(expenseRequest.getWid());
-        if (categoryById.isEmpty() || walletById.isEmpty()) {
+        if (categoryById.isEmpty() || walletById.isEmpty() || expenseRequest.getExpenseDate() == null ) {
             return null;
-
         }
+
+        boolean isDateInRange = DateUtils.isDateInRange(walletById.get().getValidFrom(), walletById.get().getValidUntil(), expenseRequest.getExpenseDate());
+        if(!isDateInRange) return null;
         ExpenseEntity expenseEntity = new ExpenseEntity(walletById.get(),categoryById.get(), expenseRequest.getExpenseName(), expenseRequest.getDescription(), expenseRequest.getExpenseTotal(), expenseRequest.getExpenseDate(), expenseRequest.getRegretted());
         ExpenseEntity savedExpense = this.expenseRepository.save(expenseEntity);
         if (savedExpense != null && savedExpense.getTid() > 0) return mapToExpense(savedExpense);

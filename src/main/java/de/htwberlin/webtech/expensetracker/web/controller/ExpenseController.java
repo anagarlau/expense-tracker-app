@@ -31,8 +31,10 @@ public class ExpenseController {
     @PostMapping("/expenses")
     public ResponseEntity<Void> postExpense(@RequestBody ExpenseManipulationRequest expenseReq) throws URISyntaxException {
         Expense expense = this.expenseService.createExpense(expenseReq);
-        URI uri = new URI("/api/v1/expenses/" + expense.getTid());
-        if (expense != null) return ResponseEntity.created(uri).build();
+        if (expense != null) {
+            URI uri = new URI("/api/v1/expenses/" + expense.getTid());
+            return ResponseEntity.created(uri).build();
+        }
         else return ResponseEntity.badRequest().build();
 
     }

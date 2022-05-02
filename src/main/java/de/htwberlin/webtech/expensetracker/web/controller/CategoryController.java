@@ -23,30 +23,28 @@ public class CategoryController {
     }
 
 
-
-
     @GetMapping("/categories")
-    public ResponseEntity<List<Category>> fetchAllCategories(){
+    public ResponseEntity<List<Category>> fetchAllCategories() {
         return ResponseEntity.ok(this.categoryService.fetchAllCategories());
     }
 
     @PostMapping("/categories")
     public ResponseEntity<Void> addCategory(@RequestBody CategoryManipulationRequest categoryReq) throws URISyntaxException {
         Category category = this.categoryService.createCategory(categoryReq);
-        URI uri = new URI("/api/v1/categories/" + category.getCid());
-        if (category != null) return ResponseEntity.created(uri).build();
-        else return ResponseEntity.badRequest().build();
+        if (category != null) {
+            URI uri = new URI("/api/v1/categories/" + category.getCid());
+            return ResponseEntity.created(uri).build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/categories/{cid}")
-    public ResponseEntity<Category> fetchById(@PathVariable Long cid){
+    public ResponseEntity<Category> fetchById(@PathVariable Long cid) {
         Category category = this.categoryService.fetchById(cid);
 
         if (category != null) return ResponseEntity.ok(category);
         else return ResponseEntity.badRequest().build();
     }
-
-
 
 
 }
