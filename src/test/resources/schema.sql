@@ -7,9 +7,22 @@ CREATE TABLE IF NOT EXISTS category
 
     );
 
-CREATE TABLE IF NOT EXISTS transaction
+CREATE TABLE IF NOT EXISTS wallet
+(
+    wid BIGINT PRIMARY KEY AUTO_INCREMENT,
+    wallet_name VARCHAR(255) NOT NULL,
+    balance DECIMAL(5, 2) NOT NULL default 0,
+    valid_from DATE DEFAULT (curdate()),
+    valid_until DATE,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT NULL
+
+    );
+
+CREATE TABLE IF NOT EXISTS expense
 (
     tid BIGINT PRIMARY KEY AUTO_INCREMENT,
+    wid BIGINT NOT NULL,
     cid BIGINT NOT NULL,
     expense_name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
@@ -18,6 +31,23 @@ CREATE TABLE IF NOT EXISTS transaction
     regretted boolean  default false,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT NULL,
-    FOREIGN KEY ( cid ) REFERENCES category( cid )
+    FOREIGN KEY ( cid ) REFERENCES category( cid ),
+    FOREIGN KEY ( wid ) REFERENCES wallet( wid )
+
     );
 
+CREATE TABLE IF NOT EXISTS income
+(
+    iid BIGINT PRIMARY KEY AUTO_INCREMENT,
+    wid BIGINT NOT NULL,
+    income_date DATE NOT NULL,
+    income_total DECIMAL(5, 2) NOT NULL,
+    FOREIGN KEY ( wid ) REFERENCES wallet( wid )
+
+    );
+
+
+-- drop table income;
+-- drop table expense;
+-- drop table category;
+-- drop table wallet;

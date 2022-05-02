@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
-
+@RequestMapping("/api/v1")
 public class CategoryController {
     private CategoryService categoryService;
 
@@ -25,12 +25,12 @@ public class CategoryController {
 
 
 
-    @GetMapping("/api/v1/categories")
+    @GetMapping("/categories")
     public ResponseEntity<List<Category>> fetchAllCategories(){
         return ResponseEntity.ok(this.categoryService.fetchAllCategories());
     }
 
-    @PostMapping("/api/v1/categories")
+    @PostMapping("/categories")
     public ResponseEntity<Void> addCategory(@RequestBody CategoryManipulationRequest categoryReq) throws URISyntaxException {
         Category category = this.categoryService.createCategory(categoryReq);
         URI uri = new URI("/api/v1/categories/" + category.getCid());
@@ -38,13 +38,15 @@ public class CategoryController {
         else return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/api/v1/categories/{cid}")
+    @GetMapping("/categories/{cid}")
     public ResponseEntity<Category> fetchById(@PathVariable Long cid){
         Category category = this.categoryService.fetchById(cid);
 
         if (category != null) return ResponseEntity.ok(category);
         else return ResponseEntity.badRequest().build();
     }
+
+
 
 
 }

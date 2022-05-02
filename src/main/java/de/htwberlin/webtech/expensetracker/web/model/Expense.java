@@ -16,12 +16,14 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Expense extends BaseEntityModel {
+public class Expense {
 
 
     private Long tid;
 
     private Category category;
+
+    private Wallet wallet;
 
     private String transactionName;
 

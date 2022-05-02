@@ -21,6 +21,8 @@ public class ExpenseManipulationRequest {
 
     private Long cid;
 
+    private Long wid;
+
     private String description;
 
     private LocalDate expenseDate;

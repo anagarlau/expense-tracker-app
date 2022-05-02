@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category extends BaseEntityModel{
+public class Category{
 
     private Long cid;
     private String categoryName;

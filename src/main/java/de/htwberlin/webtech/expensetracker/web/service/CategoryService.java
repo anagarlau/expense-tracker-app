@@ -45,7 +45,7 @@ public class CategoryService {
         else return null;
     }
 
-    public Category mapToCategory(CategoryEntity categoryEntity){
+    private Category mapToCategory(CategoryEntity categoryEntity){
         List<Long> expensesIds = categoryEntity.getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList());
         return new Category(categoryEntity.getCid(), categoryEntity.getCategoryName(), expensesIds);
     }

@@ -23,8 +23,7 @@ public class CategoryEntity extends BaseEntity{
     @Column
     private String categoryName;
 
-    // @OneToMany( mappedBy = "category")
-    //@JsonBackReference
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy ="category")
     private List<ExpenseEntity> expenses = new ArrayList<>();
 
