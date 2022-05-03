@@ -60,8 +60,8 @@ public class ExpenseService {
     }
 
 
-    public Expense fetchExpenseById(Long id) {
-        Optional<ExpenseEntity> expenseById = this.expenseRepository.findById(id);
+    public Expense fetchExpenseById(Long tid) {
+        Optional<ExpenseEntity> expenseById = this.expenseRepository.findById(tid);
         return expenseById.map(expenseEntity -> mapToExpense(expenseEntity)).orElse(null);
     }
 

@@ -42,12 +42,24 @@ CREATE TABLE IF NOT EXISTS income
     wid BIGINT NOT NULL,
     income_date DATE NOT NULL,
     income_total DECIMAL(5, 2) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT NULL,
     FOREIGN KEY ( wid ) REFERENCES wallet( wid )
 
     );
 
 
+CREATE TABLE IF NOT EXISTS users
+(
+    uid BIGINT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT NULL
+    );
+
 -- drop table income;
 -- drop table expense;
 -- drop table category;
 -- drop table wallet;
+-- drop table user;
