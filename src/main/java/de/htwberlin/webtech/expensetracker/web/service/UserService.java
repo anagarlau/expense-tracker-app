@@ -22,6 +22,7 @@ public class UserService {
 
     public User createUser(UserManipulationRequest userReq){
         //TODO: handle duplicate emails
+        //TODO: upon registration-> default wallet
         UserEntity userEntity = this.mapToUserEntity(userReq);
         UserEntity savedEntity = this.userRepository.save(userEntity);
         if(savedEntity != null && savedEntity.getUid()>0) return this.mapToUser(savedEntity);
