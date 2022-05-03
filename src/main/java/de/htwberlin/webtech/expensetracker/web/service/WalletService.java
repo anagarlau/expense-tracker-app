@@ -28,6 +28,10 @@ public class WalletService {
         return this.walletRepository.findAll().stream().map(walletEntity -> mapToWallet(walletEntity)).collect(Collectors.toList());
     }
 
+    //fetch both Incomes and Expenses associated with wallet SORTED
+    //in Controller in Response Body - new Object modelling both Income and Expense
+
+
     public Wallet addWallet(WalletManipulationRequest walletReq) {
         LocalDate validUntil = walletReq.getValidFrom() == null ? null : walletReq.getValidUntil();
         WalletEntity newWallet = new WalletEntity(walletReq.getWalletName(), walletReq.getBalance(), walletReq.getValidFrom(), validUntil);

@@ -1,11 +1,13 @@
 package de.htwberlin.webtech.expensetracker.web.service;
 
+import de.htwberlin.webtech.expensetracker.exceptions.ItemAlreadyExists;
 import de.htwberlin.webtech.expensetracker.exceptions.ResourceNotFound;
 import de.htwberlin.webtech.expensetracker.persistence.entities.UserEntity;
 import de.htwberlin.webtech.expensetracker.persistence.repository.UserRepository;
 import de.htwberlin.webtech.expensetracker.web.model.User;
 import de.htwberlin.webtech.expensetracker.web.model.UserManipulationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,19 +15,26 @@ import java.util.Optional;
 @Service
 public class UserService {
     private UserRepository userRepository;
-
+    private PasswordEncoder encoder;
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
+        this.encoder=encoder;
     }
 
 
+
+
     public User createUser(UserManipulationRequest userReq){
-        //TODO: handle duplicate emails
+        //TODO: handle duplicate emails ✔
         //TODO: upon registration-> default wallet
+        if(userRepository.existsByEmail(userReq.getEmail())){
+            throw new ItemAlreadyExists("There is already an account under " + userReq.getEmail());
+        }
         UserEntity userEntity = this.mapToUserEntity(userReq);
+        userEntity.setPassword(encoder.encode(userEntity.getPassword()));
         UserEntity savedEntity = this.userRepository.save(userEntity);
-        if(savedEntity != null && savedEntity.getUid()>0) return this.mapToUser(savedEntity);
+        if(savedEntity != null && savedEntity.getUid()>0) return new User(savedEntity.getUid(), savedEntity.getEmail());
         else return null;
     }
 
@@ -40,6 +49,6 @@ public class UserService {
     }
 
     private User mapToUser(UserEntity user){
-        return new User(user.getUid(), user.getEmail(), user.getPassword());
+        return new User(user.getUid(), user.getEmail());
     }
 }
