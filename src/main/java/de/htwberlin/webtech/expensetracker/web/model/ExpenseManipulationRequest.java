@@ -16,20 +16,17 @@ import java.time.LocalDate;
 
 public class ExpenseManipulationRequest {
 
-
-    private String expenseName;
+    //TODO: extends WalletTransactionManipulationRequest
 
     private Long cid;
 
     private Long wid;
 
-    private String description;
+    private String transactionDescription;
 
-    private LocalDate expenseDate;
+    private LocalDate transactionDate;
 
-    private BigDecimal expenseTotal;
-
-    private Boolean regretted;
+    private BigDecimal transactionTotal;
 
 
 

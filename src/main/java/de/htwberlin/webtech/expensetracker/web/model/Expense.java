@@ -18,6 +18,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Expense {
 
+    //TODO: extend WalletTransactionEntity abstract class
 
     private Long tid;
 
@@ -25,14 +26,11 @@ public class Expense {
 
     private Wallet wallet;
 
-    private String transactionName;
+     private LocalDate transactionDate;
 
-    private LocalDate expenseDate;
-
-    private String description;
+    private String transactionDescription;
 
     private BigDecimal transactionTotal;
 
-    private Boolean regretted;
 
 }

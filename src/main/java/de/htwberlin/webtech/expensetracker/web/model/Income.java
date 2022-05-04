@@ -20,11 +20,15 @@ public class Income {
 
     private Long iid;
 
+    private Category category;
+
     private Wallet wallet;
 
-    private BigDecimal incomeTotal;
+    private LocalDate transactionDate;
 
-    private LocalDate incomeDate;
+    private String transactionDescription;
+
+    private BigDecimal transactionTotal;
 
 
 }

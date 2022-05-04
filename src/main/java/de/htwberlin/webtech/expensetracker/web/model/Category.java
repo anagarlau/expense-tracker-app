@@ -20,6 +20,7 @@ public class Category{
 
     private Long cid;
     private String categoryName;
+    private String categoryType;
     private List<Long> expenses= new ArrayList<>();
 
 

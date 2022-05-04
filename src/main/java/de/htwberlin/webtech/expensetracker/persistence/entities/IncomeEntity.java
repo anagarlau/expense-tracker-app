@@ -15,26 +15,12 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name="income")
-public class IncomeEntity extends  BaseEntity{
+public class IncomeEntity extends  WalletTransactionEntity{
     //dependency to wallet
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name="wid", referencedColumnName = "wid", nullable = false)
-    private WalletEntity wallet;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long iid;
 
-    @Column( columnDefinition="decimal", precision=5, scale=2)
-    private BigDecimal incomeTotal;
-
-    @Column
-    private LocalDate incomeDate;
-
-
-    public IncomeEntity(WalletEntity wallet, BigDecimal incomeTotal, LocalDate incomeDate) {
-        this.wallet = wallet;
-        this.incomeTotal = incomeTotal;
-        this.incomeDate=incomeDate;
-    }
 }

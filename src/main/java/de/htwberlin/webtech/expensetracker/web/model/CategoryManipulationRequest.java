@@ -13,5 +13,6 @@ public class CategoryManipulationRequest {
 
 
     private String categoryName;
+    private String categoryType;
 
 }

@@ -2,6 +2,7 @@ package de.htwberlin.webtech.expensetracker.web.service;
 
 import de.htwberlin.webtech.expensetracker.exceptions.ResourceNotFound;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
+import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryType;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
 import de.htwberlin.webtech.expensetracker.web.model.Category;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest;
@@ -36,7 +37,7 @@ public class CategoryService {
 
     public Category createCategory(CategoryManipulationRequest categoryRequest) {
        // CategoryEntity categoryEntity = this.mapToCategoryEntity(categoryRequest) ;
-        CategoryEntity savedCategory = this.categoryRepository.save(new CategoryEntity(categoryRequest.getCategoryName()));
+        CategoryEntity savedCategory = this.categoryRepository.save(new CategoryEntity(categoryRequest.getCategoryName(), CategoryType.valueOf(categoryRequest.getCategoryType())));
 
         if (savedCategory.getCid() > 0) return mapToCategory(savedCategory);
         else return null;
@@ -44,7 +45,7 @@ public class CategoryService {
 
     private Category mapToCategory(CategoryEntity categoryEntity){
         List<Long> expensesIds = categoryEntity.getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList());
-        return new Category(categoryEntity.getCid(), categoryEntity.getCategoryName(), expensesIds);
+        return new Category(categoryEntity.getCid(), categoryEntity.getCategoryName(), categoryEntity.getCategoryType().name(),expensesIds);
     }
 
     private CategoryEntity mapToCategoryEntity(CategoryManipulationRequest categoryReq){

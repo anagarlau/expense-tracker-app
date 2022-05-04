@@ -16,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name="category")
 public class CategoryEntity extends BaseEntity{
+    //TODO: add field expense or transaction mit ENUM
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
@@ -23,12 +24,17 @@ public class CategoryEntity extends BaseEntity{
     @Column
     private String categoryName;
 
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private CategoryType categoryType;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy ="category")
     private List<ExpenseEntity> expenses = new ArrayList<>();
 
-    public CategoryEntity( String categoryName) {
+    public CategoryEntity( String categoryName, CategoryType categoryType) {
+
         this.categoryName = categoryName;
+        this.categoryType = categoryType;
     }
 
 

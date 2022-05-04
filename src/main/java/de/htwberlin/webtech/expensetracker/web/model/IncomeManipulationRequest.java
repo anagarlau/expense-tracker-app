@@ -16,10 +16,14 @@ public class IncomeManipulationRequest {
 
 
 
+    private Long cid;
+
     private Long wid;
 
-    private BigDecimal incomeTotal;
+    private String transactionDescription;
 
-    private LocalDate incomeDate;
+    private LocalDate transactionDate;
+
+    private BigDecimal transactionTotal;
 
 }

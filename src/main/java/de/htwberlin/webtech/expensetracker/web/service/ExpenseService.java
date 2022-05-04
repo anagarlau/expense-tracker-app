@@ -46,13 +46,14 @@ public class ExpenseService {
         Optional<CategoryEntity> categoryById = expenseRequest.getCid() == null ? Optional.empty() : this.categoryRepository.findById(expenseRequest.getCid());
         Optional<WalletEntity> walletById = expenseRequest.getWid() == null ? Optional.empty() : this.walletRepository.findById(expenseRequest.getWid());
 
-        if (categoryById.isEmpty() || walletById.isEmpty() || expenseRequest.getExpenseDate() == null ) {
+        if (categoryById.isEmpty() || walletById.isEmpty() || expenseRequest.getTransactionDate() == null ) {
             return null;
         }
 
-        boolean isDateInRange = DateUtils.isDateInRange(walletById.get().getValidFrom(), walletById.get().getValidUntil(), expenseRequest.getExpenseDate());
+        boolean isDateInRange = DateUtils.isDateInRange(walletById.get().getValidFrom(), walletById.get().getValidUntil(), expenseRequest.getTransactionDate());
+       //TODO: for date out of range throw Exception otherwise unclear where the problem comes from
         if(!isDateInRange) return null;
-        ExpenseEntity expenseEntity = new ExpenseEntity(walletById.get(),categoryById.get(), expenseRequest.getExpenseName(), expenseRequest.getDescription(), expenseRequest.getExpenseTotal(), expenseRequest.getExpenseDate(), expenseRequest.getRegretted());
+        ExpenseEntity expenseEntity = new ExpenseEntity(categoryById.get(), walletById.get(),  expenseRequest.getTransactionDescription(), expenseRequest.getTransactionTotal(), expenseRequest.getTransactionDate());
         ExpenseEntity savedExpense = this.expenseRepository.save(expenseEntity);
         if (savedExpense != null && savedExpense.getTid() > 0) return mapToExpense(savedExpense);
         else return null;
@@ -72,14 +73,19 @@ public class ExpenseService {
 
             ExpenseEntity expenseEntity = toBeUpdatedById.get();
 
-            expenseEntity.setExpenseName(expenseRequest.getExpenseName() != null ? expenseRequest.getExpenseName() : expenseEntity.getExpenseName());
-            expenseEntity.setDescription(expenseRequest.getDescription() != null ? expenseRequest.getDescription() : expenseEntity.getDescription());
-            expenseEntity.setRegretted(expenseRequest.getRegretted() != null ? expenseRequest.getRegretted() : expenseEntity.getRegretted());
-            expenseEntity.setExpenseTotal(expenseRequest.getExpenseTotal() != null ? expenseRequest.getExpenseTotal() : expenseEntity.getExpenseTotal());
-            expenseEntity.setExpenseDate(expenseRequest.getExpenseDate() != null ? expenseRequest.getExpenseDate() : expenseEntity.getExpenseDate());
+
+            expenseEntity.setTransactionDescription(expenseRequest.getTransactionDescription() != null ? expenseRequest.getTransactionDescription() : expenseEntity.getTransactionDescription());
+
+            expenseEntity.setTransactionTotal(expenseRequest.getTransactionTotal() != null ? expenseRequest.getTransactionTotal() : expenseEntity.getTransactionTotal());
+            expenseEntity.setTransactionDate(expenseRequest.getTransactionDate() != null ? expenseRequest.getTransactionDate() : expenseEntity.getTransactionDate());
             if (expenseRequest.getCid() != null) {
                 Optional<CategoryEntity> catById = this.categoryRepository.findById(expenseRequest.getCid());
                 expenseEntity.setCategory(catById.orElse(expenseEntity.getCategory()));
+            }
+
+            if(expenseRequest.getWid() != null){
+                Optional<WalletEntity> walletById = this.walletRepository.findById(expenseRequest.getWid());
+                expenseEntity.setWallet(walletById.orElse(expenseEntity.getWallet()));
             }
 
 
@@ -96,7 +102,7 @@ public class ExpenseService {
         Optional<CategoryEntity> categoryById = categoryRepository.findById(expense.getCid());
         Optional<WalletEntity> walletById = walletRepository.findById(expense.getWid());
         if (categoryById.isPresent() && walletById.isPresent()) {
-            return new ExpenseEntity(walletById.get(), categoryById.get(),expense.getExpenseName(), expense.getDescription(), expense.getExpenseTotal(), expense.getExpenseDate(), expense.getRegretted());
+            return new ExpenseEntity(categoryById.get(),walletById.get(), expense.getTransactionDescription(), expense.getTransactionTotal(), expense.getTransactionDate() );
         } else {
             return null;
         }
@@ -106,12 +112,12 @@ public class ExpenseService {
 
     private Expense mapToExpense(ExpenseEntity expense) {
 
-        Category cat = new Category(expense.getCategory().getCid(), expense.getCategory().getCategoryName(), expense.getCategory().getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList()));
+        Category cat = new Category(expense.getCategory().getCid(), expense.getCategory().getCategoryName(), expense.getCategory().getCategoryType().name(),expense.getCategory().getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList()));
         List<Long> expenses = expense.getWallet().getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList());
         List<Long> incomes = expense.getWallet().getIncomes().stream().map(expenseEntity -> expenseEntity.getIid()).collect(Collectors.toList());
         Wallet wallet = new Wallet(expense.getWallet().getWid(), expense.getWallet().getWalletName(), expense.getWallet().getBalance(),
                 expense.getWallet().getValidFrom(), expense.getWallet().getValidUntil(), expenses, incomes);
-        return new Expense(expense.getTid(), cat, wallet, expense.getExpenseName(), expense.getExpenseDate(), expense.getDescription(), expense.getExpenseTotal(), expense.getRegretted());
+        return new Expense(expense.getTid(), cat, wallet, expense.getTransactionDate(), expense.getTransactionDescription(), expense.getTransactionTotal());
 
     }
 
