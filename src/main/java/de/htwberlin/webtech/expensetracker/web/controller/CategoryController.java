@@ -1,8 +1,8 @@
 package de.htwberlin.webtech.expensetracker.web.controller;
 
+import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryType;
 import de.htwberlin.webtech.expensetracker.web.model.Category;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest;
-import de.htwberlin.webtech.expensetracker.web.model.Expense;
 import de.htwberlin.webtech.expensetracker.web.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +38,9 @@ public class CategoryController {
         return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/categories/{cid}")
-    public ResponseEntity<Category> fetchById(@PathVariable Long cid) {
-        Category category = this.categoryService.fetchById(cid);
+    @GetMapping("/categories/{type}")
+    public ResponseEntity<List<String>> fetchById(@PathVariable String type) {
+        List<String> category = this.categoryService.fetchByCategoryNamesByType(type);
 
         if (category != null) return ResponseEntity.ok(category);
         else return ResponseEntity.badRequest().build();

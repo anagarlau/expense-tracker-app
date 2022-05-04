@@ -47,8 +47,8 @@ public class WalletService {
 
 
     public Wallet mapToWallet(WalletEntity walletEntity) {
-        List<Long> expenses =  walletEntity.getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList());
-        List<Long> incomes = walletEntity.getIncomes().stream().map(incomeEntity -> incomeEntity.getIid()).collect(Collectors.toList());
+        List<Long> expenses =  walletEntity.getExpenses().stream().map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
+        List<Long> incomes =  walletEntity.getIncomes().stream().map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
         Wallet wallet = new Wallet(walletEntity.getWid(), walletEntity.getWalletName(), walletEntity.getBalance(), walletEntity.getValidFrom(), walletEntity.getValidUntil(), expenses, incomes);
         return wallet;
     }

@@ -16,20 +16,15 @@ import java.time.LocalDate;
 @Entity
 @Table(name="expense")
 public class ExpenseEntity extends WalletTransactionEntity {
-
-    //TODO: expense and income extend an abstract class WalletTransactionEntity which in turn extends BaseEntity
-    //TODO: revise MySQL Schema
-
-    //table dependencies
-    //wallet
-
-    //add validation
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long tid;
-
-
     public ExpenseEntity(CategoryEntity categoryEntity, WalletEntity walletEntity, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
         super(categoryEntity, walletEntity, transactionDescription, transactionTotal, transactionDate);
     }
+
+    //TODO: expense and income extend an abstract class WalletTransactionEntity which in turn extends BaseEntity ✔
+    //TODO: revise MySQL Schema ✔
+
+
+
+
+
 }

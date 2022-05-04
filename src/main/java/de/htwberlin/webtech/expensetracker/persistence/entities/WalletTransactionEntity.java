@@ -20,6 +20,10 @@ public abstract class WalletTransactionEntity  extends BaseEntity {
     @JoinColumn(name="cid", referencedColumnName = "cid", nullable = false)
     protected CategoryEntity category;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name="wid", referencedColumnName = "wid", nullable = false)
@@ -34,5 +38,11 @@ public abstract class WalletTransactionEntity  extends BaseEntity {
     @Column
     protected LocalDate transactionDate;
 
-
+    public WalletTransactionEntity(CategoryEntity category, WalletEntity wallet, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
+        this.category = category;
+        this.wallet = wallet;
+        this.transactionDescription = transactionDescription;
+        this.transactionTotal = transactionTotal;
+        this.transactionDate = transactionDate;
+    }
 }

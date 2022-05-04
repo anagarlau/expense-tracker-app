@@ -1,21 +1,17 @@
 package de.htwberlin.webtech.expensetracker.web.service;
 
 
-import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
-import de.htwberlin.webtech.expensetracker.persistence.entities.ExpenseEntity;
-import de.htwberlin.webtech.expensetracker.persistence.entities.WalletEntity;
+import de.htwberlin.webtech.expensetracker.exceptions.TransactionOutOfBounds;
+import de.htwberlin.webtech.expensetracker.persistence.entities.*;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
 import de.htwberlin.webtech.expensetracker.persistence.repository.ExpenseRepository;
+import de.htwberlin.webtech.expensetracker.persistence.repository.IncomeRepository;
 import de.htwberlin.webtech.expensetracker.persistence.repository.WalletRepository;
 import de.htwberlin.webtech.expensetracker.utils.DateUtils;
-import de.htwberlin.webtech.expensetracker.web.model.Category;
-import de.htwberlin.webtech.expensetracker.web.model.Expense;
-import de.htwberlin.webtech.expensetracker.web.model.ExpenseManipulationRequest;
-import de.htwberlin.webtech.expensetracker.web.model.Wallet;
+import de.htwberlin.webtech.expensetracker.web.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,14 +21,16 @@ import java.util.stream.Collectors;
 public class ExpenseService {
     private ExpenseRepository expenseRepository;
     private CategoryRepository categoryRepository;
+    private IncomeRepository incomeRepository;
     private WalletRepository walletRepository;
 
 
     @Autowired
-    public ExpenseService(ExpenseRepository expenseRepository, CategoryRepository categoryRepository, WalletRepository walletRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository, IncomeRepository incomeRepository , CategoryRepository categoryRepository, WalletRepository walletRepository) {
         this.expenseRepository = expenseRepository;
         this.categoryRepository = categoryRepository;
         this.walletRepository = walletRepository;
+        this.incomeRepository=incomeRepository;
 
     }
 
@@ -51,11 +49,12 @@ public class ExpenseService {
         }
 
         boolean isDateInRange = DateUtils.isDateInRange(walletById.get().getValidFrom(), walletById.get().getValidUntil(), expenseRequest.getTransactionDate());
-       //TODO: for date out of range throw Exception otherwise unclear where the problem comes from
+        //TODO: for date out of range throw Exception otherwise unclear where the problem comes from
         if(!isDateInRange) return null;
+        //TODO: check for right category cid
         ExpenseEntity expenseEntity = new ExpenseEntity(categoryById.get(), walletById.get(),  expenseRequest.getTransactionDescription(), expenseRequest.getTransactionTotal(), expenseRequest.getTransactionDate());
         ExpenseEntity savedExpense = this.expenseRepository.save(expenseEntity);
-        if (savedExpense != null && savedExpense.getTid() > 0) return mapToExpense(savedExpense);
+        if (savedExpense != null && savedExpense.getId() > 0) return mapToExpense(savedExpense);
         else return null;
 
     }
@@ -112,13 +111,14 @@ public class ExpenseService {
 
     private Expense mapToExpense(ExpenseEntity expense) {
 
-        Category cat = new Category(expense.getCategory().getCid(), expense.getCategory().getCategoryName(), expense.getCategory().getCategoryType().name(),expense.getCategory().getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList()));
-        List<Long> expenses = expense.getWallet().getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList());
-        List<Long> incomes = expense.getWallet().getIncomes().stream().map(expenseEntity -> expenseEntity.getIid()).collect(Collectors.toList());
+        Category cat = new Category(expense.getCategory().getCid(), expense.getCategory().getCategoryName(), expense.getCategory().getCategoryType().name(),expense.getCategory().getExpenses().stream().map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()));
+        List<Long> expenses = expense.getWallet().getExpenses().stream().map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
+        List<Long> incomes = expense.getWallet().getIncomes().stream().map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
         Wallet wallet = new Wallet(expense.getWallet().getWid(), expense.getWallet().getWalletName(), expense.getWallet().getBalance(),
                 expense.getWallet().getValidFrom(), expense.getWallet().getValidUntil(), expenses, incomes);
-        return new Expense(expense.getTid(), cat, wallet, expense.getTransactionDate(), expense.getTransactionDescription(), expense.getTransactionTotal());
+        return new Expense(expense.getId(), cat, wallet, expense.getTransactionDate(), expense.getTransactionDescription(), expense.getTransactionTotal());
 
     }
+
 
 }

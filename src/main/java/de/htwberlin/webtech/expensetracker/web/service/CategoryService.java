@@ -9,8 +9,8 @@ import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,10 +28,15 @@ public class CategoryService {
         return this.categoryRepository.findAll().stream().map(categoryEntity -> this.mapToCategory(categoryEntity)).collect(Collectors.toList());
      }
 
-     public Category fetchById(Long cid){
-         Optional<CategoryEntity> catById = this.categoryRepository.findById(cid);
-         if(catById.isPresent()) return mapToCategory(catById.get());
-         else return null;
+     public List<String> fetchByCategoryNamesByType(String type){
+        List<String> catNames = new ArrayList<>();
+        if(type.equals("expenses"))
+            catNames = this.categoryRepository.findByCategoryType(CategoryType.EXPENSE)
+                    .stream().filter(categoryEntity -> categoryEntity.getCategoryType() == CategoryType.EXPENSE).map(cat -> cat.getCategoryName()).collect(Collectors.toList());
+        else if(type.equals("incomes"))
+            catNames = this.categoryRepository.findByCategoryType(CategoryType.INCOME)
+                    .stream().filter(categoryEntity -> categoryEntity.getCategoryType() == CategoryType.EXPENSE).map(cat -> cat.getCategoryName()).collect(Collectors.toList());
+         return catNames;
      }
 
 
@@ -44,7 +49,7 @@ public class CategoryService {
     }
 
     private Category mapToCategory(CategoryEntity categoryEntity){
-        List<Long> expensesIds = categoryEntity.getExpenses().stream().map(expenseEntity -> expenseEntity.getTid()).collect(Collectors.toList());
+        List<Long> expensesIds = categoryEntity.getExpenses().stream().map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
         return new Category(categoryEntity.getCid(), categoryEntity.getCategoryName(), categoryEntity.getCategoryType().name(),expensesIds);
     }
 

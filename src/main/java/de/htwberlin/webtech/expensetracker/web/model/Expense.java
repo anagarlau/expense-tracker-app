@@ -14,23 +14,14 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Expense {
+public class Expense extends WalletTransaction {
+    public Expense(Long id, Category cat, Wallet wallet, LocalDate transactionDate, String transactionDescription, BigDecimal transactionTotal) {
+        super(id,cat,wallet, transactionDate, transactionDescription, transactionTotal);
+    }
 
     //TODO: extend WalletTransactionEntity abstract class
 
-    private Long tid;
-
-    private Category category;
-
-    private Wallet wallet;
-
-     private LocalDate transactionDate;
-
-    private String transactionDescription;
-
-    private BigDecimal transactionTotal;
 
 
 }

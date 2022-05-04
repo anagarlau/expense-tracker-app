@@ -2,6 +2,7 @@ package de.htwberlin.webtech.expensetracker.web.controller;
 
 import de.htwberlin.webtech.expensetracker.web.model.Expense;
 import de.htwberlin.webtech.expensetracker.web.model.ExpenseManipulationRequest;
+import de.htwberlin.webtech.expensetracker.web.model.WalletTransaction;
 import de.htwberlin.webtech.expensetracker.web.service.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,22 +18,24 @@ import java.util.List;
 public class ExpenseController {
     private final ExpenseService expenseService;
 
+
     @Autowired
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
     }
 
-    @GetMapping("/expenses")
+    //gets all types of transactions
+    @GetMapping("/transactions")
     public ResponseEntity<List<Expense>> fetchExpenses() {
-        List<Expense> transactions = this.expenseService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(transactions);
+        List<Expense> expenses = this.expenseService.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(expenses);
     }
 
     @PostMapping("/expenses")
-    public ResponseEntity<Void> postExpense(@RequestBody ExpenseManipulationRequest expenseReq) throws URISyntaxException {
-        Expense expense = this.expenseService.createExpense(expenseReq);
+    public ResponseEntity<Void> postExpense( @RequestBody ExpenseManipulationRequest expenseReq) throws URISyntaxException {
+        WalletTransaction expense = this.expenseService.createExpense(expenseReq);
         if (expense != null) {
-            URI uri = new URI("/api/v1/expenses/" + expense.getTid());
+            URI uri = new URI("/api/v1/expenses/" + expense.getId());
             return ResponseEntity.created(uri).build();
         }
         else return ResponseEntity.badRequest().build();

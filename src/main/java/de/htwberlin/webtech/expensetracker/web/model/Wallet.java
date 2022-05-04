@@ -25,5 +25,6 @@ public class Wallet {
 
     private LocalDate validUntil;
     private List<Long> expenses= new ArrayList<>();
-    private List<Long> incomes = new ArrayList<>();
+    private List<Long> incomes= new ArrayList<>();
+
 }

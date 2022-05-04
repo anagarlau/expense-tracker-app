@@ -10,17 +10,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @Entity
 @Table(name="income")
 public class IncomeEntity extends  WalletTransactionEntity{
-    //dependency to wallet
 
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long iid;
-
+    public IncomeEntity(CategoryEntity categoryEntity, WalletEntity walletEntity, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
+        super(categoryEntity, walletEntity, transactionDescription, transactionTotal, transactionDate);
+    }
 }

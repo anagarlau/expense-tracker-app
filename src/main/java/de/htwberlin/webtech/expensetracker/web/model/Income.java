@@ -11,24 +11,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Income {
-
-
-
-
-    private Long iid;
-
-    private Category category;
-
-    private Wallet wallet;
-
-    private LocalDate transactionDate;
-
-    private String transactionDescription;
-
-    private BigDecimal transactionTotal;
+public class Income extends WalletTransaction{
+    public Income(Long id, Category cat, Wallet wallet, LocalDate transactionDate, String transactionDescription, BigDecimal transactionTotal) {
+        super(id,cat,wallet, transactionDate, transactionDescription, transactionTotal);
+    }
 
 
 }
