@@ -1,28 +1,18 @@
 package de.htwberlin.webtech.expensetracker.web.service;
 
-import de.htwberlin.webtech.expensetracker.persistence.repository.ExpenseRepository;
-import de.htwberlin.webtech.expensetracker.persistence.repository.IncomeRepository;
+import de.htwberlin.webtech.expensetracker.persistence.entities.TransactionEntity;
 import de.htwberlin.webtech.expensetracker.web.model.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import de.htwberlin.webtech.expensetracker.web.model.TransactionManipulationRequest;
 
 import java.util.List;
 
-@Service
-public class TransactionService {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ExpenseRepository expenseRepository;
-    @Autowired
-    private ExpenseService expenseService;
-    @Autowired
-    private IncomeRepository incomeRepository;
+public interface TransactionService {
+
+    List<Transaction> findAllForLoggedInUser();
+    Transaction createTransaction(TransactionManipulationRequest expenseRequest) ;
+    Transaction fetchTransactionById(Long tid);
+    Transaction update(Long id, TransactionManipulationRequest expenseRequest);
 
 
-    /*all transaction types*/
-    public List<Transaction> gimmeAllTheGoodStuff(){
-        List<Transaction> expenses = this.expenseService.findAllForLoggedInUser();
-        return expenses;
-    }
+
 }

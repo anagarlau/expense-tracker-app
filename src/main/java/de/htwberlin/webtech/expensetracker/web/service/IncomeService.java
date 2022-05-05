@@ -5,20 +5,19 @@ import de.htwberlin.webtech.expensetracker.exceptions.TransactionOutOfBounds;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryType;
 import de.htwberlin.webtech.expensetracker.persistence.entities.IncomeEntity;
+import de.htwberlin.webtech.expensetracker.persistence.entities.TransactionEntity;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
-import de.htwberlin.webtech.expensetracker.persistence.repository.IncomeRepository;
 import de.htwberlin.webtech.expensetracker.persistence.repository.IncomeRepository;
 import de.htwberlin.webtech.expensetracker.web.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 
-public class IncomeService {
+public class IncomeService implements TransactionService{
     private CategoryRepository categoryRepository;
     private IncomeRepository incomeRepository;
     private UserService userService;
@@ -36,12 +35,12 @@ public class IncomeService {
     /*all incomes*/
     public List<Transaction> findAllForLoggedInUser() {
         return this.incomeRepository.findByUserUid(userService.getLoggedInUser().getUid())
-                .stream().map(expenseEntity -> mapToIncome(expenseEntity)).collect(Collectors.toList());
+                .stream().map(expenseEntity -> mapToSpecificTransaction(expenseEntity)).collect(Collectors.toList());
     }
 
 
 
-    public Income createIncome(TransactionManipulationRequest incomeRequest) {
+    public Transaction createTransaction(TransactionManipulationRequest incomeRequest) {
         System.out.println(incomeRequest.getCid());
         Optional<CategoryEntity> categoryById = incomeRequest.getCid() == null ? Optional.empty() : this.categoryRepository.findByCidAndUserUidAndCategoryType(incomeRequest.getCid(), this.userService.getLoggedInUser().getUid(), CategoryType.INCOME);
 
@@ -50,39 +49,39 @@ public class IncomeService {
         }
 
 
-        IncomeEntity expenseEntity =
+        IncomeEntity incomeEntity =
                 new IncomeEntity(this.userService.getLoggedInUserEntity(),categoryById.get(),incomeRequest.getTransactionDescription(), incomeRequest.getTransactionTotal(), incomeRequest.getTransactionDate());
-        IncomeEntity savedIncome = this.incomeRepository.save(expenseEntity);
-        if (savedIncome != null && savedIncome.getId() > 0) return mapToIncome(savedIncome);
+        IncomeEntity savedIncome = this.incomeRepository.save(incomeEntity);
+        if (savedIncome != null && savedIncome.getId() > 0) return mapToSpecificTransaction(savedIncome);
         else return null;
 
     }
 
 
-    public Income fetchIncomeById(Long tid) {
-        Optional<IncomeEntity> expenseById =
+    public Transaction fetchTransactionById(Long tid) {
+        Optional<IncomeEntity> incomeById =
                 this.incomeRepository.findByIdAndUserUidAndAndCategory_CategoryType(tid, this.userService.getLoggedInUserEntity().getUid(), CategoryType.INCOME);
-         return expenseById.map(expenseEntity ->  mapToIncome(expenseEntity)).orElseThrow(() -> new ResourceNotFound("Income not found"));
+         return incomeById.map(expenseEntity ->  mapToSpecificTransaction(expenseEntity)).orElseThrow(() -> new ResourceNotFound("Income not found"));
 
     }
 
 
-    public Income update(Long id, TransactionManipulationRequest expenseRequest) {
+    public Transaction update(Long id, TransactionManipulationRequest request) {
         Optional<IncomeEntity> toBeUpdatedById = this.incomeRepository.findByIdAndUserUidAndAndCategory_CategoryType(id, this.userService.getLoggedInUserEntity().getUid(), CategoryType.INCOME);
 
         if (toBeUpdatedById.isPresent()) {
-             IncomeEntity expenseEntity = toBeUpdatedById.get();
-             expenseEntity.setTransactionDescription(expenseRequest.getTransactionDescription() != null ? expenseRequest.getTransactionDescription() : expenseEntity.getTransactionDescription());
-             expenseEntity.setTransactionTotal(expenseRequest.getTransactionTotal() != null ? expenseRequest.getTransactionTotal() : expenseEntity.getTransactionTotal());
-             expenseEntity.setTransactionDate(expenseRequest.getTransactionDate() != null ? expenseRequest.getTransactionDate() : expenseEntity.getTransactionDate());
-            if (expenseRequest.getCid() != null) {
-                Optional<CategoryEntity> catById = this.categoryRepository.findByCidAndUserUidAndCategoryType(expenseRequest.getCid(), this.userService.getLoggedInUserEntity().getUid(),CategoryType.INCOME);
+             IncomeEntity incomeEntity = toBeUpdatedById.get();
+             incomeEntity.setTransactionDescription(request.getTransactionDescription() != null ? request.getTransactionDescription() : incomeEntity.getTransactionDescription());
+             incomeEntity.setTransactionTotal(request.getTransactionTotal() != null ? request.getTransactionTotal() : incomeEntity.getTransactionTotal());
+             incomeEntity.setTransactionDate(request.getTransactionDate() != null ? request.getTransactionDate() : incomeEntity.getTransactionDate());
+            if (request.getCid() != null) {
+                Optional<CategoryEntity> catById = this.categoryRepository.findByCidAndUserUidAndCategoryType(request.getCid(), this.userService.getLoggedInUserEntity().getUid(),CategoryType.INCOME);
                 if(catById.isEmpty()) throw new TransactionOutOfBounds("Wrong category");
-                else expenseEntity.setCategory(catById.orElse(expenseEntity.getCategory()));
+                else incomeEntity.setCategory(catById.orElse(incomeEntity.getCategory()));
             }
 
-            IncomeEntity savedEntity = this.incomeRepository.save(expenseEntity);
-            return mapToIncome(savedEntity);
+            IncomeEntity savedEntity = this.incomeRepository.save(incomeEntity);
+            return mapToSpecificTransaction(savedEntity);
         } else {
             return null;
         }
@@ -90,7 +89,7 @@ public class IncomeService {
     }
 
 
-    private IncomeEntity mapToIncomeEntity(IncomeManipulationRequest income) {
+    private TransactionEntity mapToIncomeEntity(TransactionManipulationRequest income) {
         Optional<CategoryEntity> categoryById = categoryRepository.findById(income.getCid());
         if (categoryById.isPresent() ) {
             return new IncomeEntity(userService.getLoggedInUserEntity(), categoryById.get(), income.getTransactionDescription(), income.getTransactionTotal(), income.getTransactionDate() );
@@ -101,12 +100,12 @@ public class IncomeService {
     }
 
 
-    private Income mapToIncome(IncomeEntity expense) {
+    private Transaction mapToSpecificTransaction(TransactionEntity income) {
 
-        Category cat = new Category(expense.getCategory().getCid(),expense.getUser().getUid(),expense.getCategory().getCategoryName(), expense.getCategory().getCategoryType().name(),
-                expense.getCategory().getIncomes().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()),
-                expense.getCategory().getIncomes().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()));
-        return new Income(expense.getId(),this.userService.getLoggedInUser().getUid(),cat, expense.getTransactionDate(), expense.getTransactionDescription(), expense.getTransactionTotal());
+        Category cat = new Category(income.getCategory().getCid(),income.getUser().getUid(),income.getCategory().getCategoryName(), income.getCategory().getCategoryType().name(),
+                income.getCategory().getIncomes().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()),
+                income.getCategory().getIncomes().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()));
+        return new Income(income.getId(),this.userService.getLoggedInUser().getUid(),cat, income.getTransactionDate(), income.getTransactionDescription(), income.getTransactionTotal());
 
     }
 

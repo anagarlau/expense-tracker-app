@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 
-public class ExpenseService {
+public class ExpenseService implements TransactionService {
     private ExpenseRepository expenseRepository;
     private CategoryRepository categoryRepository;
     private IncomeRepository incomeRepository;
@@ -37,12 +37,12 @@ public class ExpenseService {
     /*all expenses*/
     public List<Transaction> findAllForLoggedInUser() {
         return this.expenseRepository.findByUserUid(userService.getLoggedInUser().getUid())
-                .stream().map(expenseEntity -> mapToExpense(expenseEntity)).collect(Collectors.toList());
+                .stream().map(expenseEntity -> mapToSpecificTransaction(expenseEntity)).collect(Collectors.toList());
     }
 
 
 
-    public Expense createExpense(TransactionManipulationRequest expenseRequest) {
+    public Transaction createTransaction(TransactionManipulationRequest expenseRequest) {
         Optional<CategoryEntity> categoryById = expenseRequest.getCid() == null ? Optional.empty() : this.categoryRepository.findByCidAndUserUidAndCategoryType(expenseRequest.getCid(), this.userService.getLoggedInUser().getUid(), CategoryType.EXPENSE);
 
         if (categoryById.isEmpty() ||   expenseRequest.getTransactionDate() == null  ) {
@@ -53,21 +53,21 @@ public class ExpenseService {
         ExpenseEntity expenseEntity =
                 new ExpenseEntity(this.userService.getLoggedInUserEntity(),categoryById.get(),expenseRequest.getTransactionDescription(), expenseRequest.getTransactionTotal(), expenseRequest.getTransactionDate());
         ExpenseEntity savedExpense = this.expenseRepository.save(expenseEntity);
-        if (savedExpense != null && savedExpense.getId() > 0) return mapToExpense(savedExpense);
+        if (savedExpense != null && savedExpense.getId() > 0) return mapToSpecificTransaction(savedExpense);
         else return null;
 
     }
 
 
-    public Expense fetchExpenseById(Long tid) {
+    public Transaction fetchTransactionById(Long tid) {
         Optional<ExpenseEntity> expenseById =
                 this.expenseRepository.findByIdAndUserUidAndAndCategory_CategoryType(tid, this.userService.getLoggedInUserEntity().getUid(), CategoryType.EXPENSE);
-         return expenseById.map(expenseEntity ->  mapToExpense(expenseEntity)).orElseThrow(() -> new ResourceNotFound("Expense not found"));
+         return expenseById.map(expenseEntity ->  mapToSpecificTransaction(expenseEntity)).orElseThrow(() -> new ResourceNotFound("Expense not found"));
 
     }
 
 
-    public Expense update(Long id, TransactionManipulationRequest expenseRequest) {
+    public Transaction update(Long id, TransactionManipulationRequest expenseRequest) {
         Optional<ExpenseEntity> toBeUpdatedById = this.expenseRepository.findByIdAndUserUidAndAndCategory_CategoryType(id, this.userService.getLoggedInUserEntity().getUid(), CategoryType.EXPENSE);
 
         if (toBeUpdatedById.isPresent()) {
@@ -82,7 +82,7 @@ public class ExpenseService {
             }
 
             ExpenseEntity savedEntity = this.expenseRepository.save(expenseEntity);
-            return mapToExpense(savedEntity);
+            return mapToSpecificTransaction(savedEntity);
         } else {
             return null;
         }
@@ -90,7 +90,7 @@ public class ExpenseService {
     }
 
 
-    private ExpenseEntity mapToExpenseEntity(ExpenseManipulationRequest expense) {
+    private TransactionEntity mapToExpenseEntity(TransactionManipulationRequest expense) {
         Optional<CategoryEntity> categoryById = categoryRepository.findById(expense.getCid());
         if (categoryById.isPresent() ) {
             return new ExpenseEntity(userService.getLoggedInUserEntity(), categoryById.get(), expense.getTransactionDescription(), expense.getTransactionTotal(), expense.getTransactionDate() );
@@ -101,7 +101,7 @@ public class ExpenseService {
     }
 
 
-    private Expense mapToExpense(ExpenseEntity expense) {
+    private Transaction mapToSpecificTransaction(TransactionEntity expense) {
 
         Category cat = new Category(expense.getCategory().getCid(),expense.getUser().getUid(),expense.getCategory().getCategoryName(), expense.getCategory().getCategoryType().name(),
                 expense.getCategory().getExpenses().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()),

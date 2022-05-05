@@ -29,15 +29,15 @@ public class TransactionController {
         this.incomeService = incomeService;
     }
 
-    //gets all types of transactions
+
     @GetMapping("/{transactionType}")
     public ResponseEntity<List<Transaction>> fetchExpenses(@PathVariable String transactionType) {
         List<Transaction> transactions = new ArrayList<>();
-        if(transactionType.equals("expenses")){
+        if (transactionType.equals("expenses")) {
             transactions = this.expenseService.findAllForLoggedInUser();
         }
-        if(transactionType.equals("incomes")){
-             transactions = this.incomeService.findAllForLoggedInUser();
+        if (transactionType.equals("incomes")) {
+            transactions = this.incomeService.findAllForLoggedInUser();
         }
 
 //        if(transactionType.equals("all")){
@@ -47,44 +47,44 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.OK).body(transactions);
     }
 
+    /*current balance in response senden*/
     @PostMapping("/{transactionType}")
     public ResponseEntity<Void> postTransaction(@PathVariable String transactionType, @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
-       Transaction transaction = null;
-        if(transactionType.equals("expenses")){
-            transaction = this.expenseService.createExpense(request);
+        Transaction transaction = null;
+        if (transactionType.equals("expenses")) {
+            transaction = this.expenseService.createTransaction(request);
         }
-        if(transactionType.equals("incomes")){
-           transaction = this.incomeService.createIncome(request);
+        if (transactionType.equals("incomes")) {
+            transaction = this.incomeService.createTransaction(request);
         }
 
         if (transaction != null) {
             URI uri = new URI("/api/v1/expenses/" + transaction.getId());
             return ResponseEntity.created(uri).build();
-        }
-        else return ResponseEntity.badRequest().build();
+        } else return ResponseEntity.badRequest().build();
 
     }
 
     @GetMapping("/{transactionType}/{tid}")
     public ResponseEntity<Transaction> fetchExpenseById(@PathVariable String transactionType, @PathVariable Long tid) {
         Transaction transaction = null;
-        if(transactionType.equals("expenses")){
-            transaction = this.expenseService.fetchExpenseById(tid);
+        if (transactionType.equals("expenses")) {
+            transaction = this.expenseService.fetchTransactionById(tid);
         }
-        if(transactionType.equals("incomes")){
-            //add income service
+        if (transactionType.equals("incomes")) {
+            transaction = this.incomeService.fetchTransactionById(tid);
         }
-        return (transaction  != null) ? ResponseEntity.ok(transaction ) : ResponseEntity.notFound().build();
+        return (transaction != null) ? ResponseEntity.ok(transaction) : ResponseEntity.notFound().build();
     }
 
     @PatchMapping("/{transactionType}/{tid}")
-    public ResponseEntity<Transaction> updateExpense(@PathVariable String transactionType, @RequestBody TransactionManipulationRequest expense, @PathVariable(value = "tid") Long tid) throws URISyntaxException {
-       Transaction updatableTransaction = null;
-        if(transactionType.equals("expenses")){
-            updatableTransaction = this.expenseService.update(tid, expense);
+    public ResponseEntity<Transaction> updateExpense(@PathVariable String transactionType, @RequestBody TransactionManipulationRequest request, @PathVariable(value = "tid") Long tid) throws URISyntaxException {
+        Transaction updatableTransaction = null;
+        if (transactionType.equals("expenses")) {
+            updatableTransaction = this.expenseService.update(tid, request);
         }
-        if(transactionType.equals("incomes")){
-            //incomeService call
+        if (transactionType.equals("incomes")) {
+            this.incomeService.update(tid, request);
         }
         return (updatableTransaction != null) ? ResponseEntity.ok(updatableTransaction) : ResponseEntity.notFound().build();
     }
