@@ -10,9 +10,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryManipulationRequest {
-
     private Long id;
+    private Long uid;
     private String categoryName;
     private String categoryType;
 
+    public CategoryManipulationRequest(String categoryName, String categoryType) {
+        this.categoryName = categoryName;
+        this.categoryType = categoryType;
+    }
 }

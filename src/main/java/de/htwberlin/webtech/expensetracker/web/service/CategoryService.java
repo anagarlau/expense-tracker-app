@@ -30,27 +30,20 @@ public class CategoryService {
     }
 
 
-//    @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
-//    public List<Category> fetchAllCategories(){
-//        return this.categoryRepository.findAll().stream().map(categoryEntity -> this.mapToCategory(categoryEntity)).collect(Collectors.toList());
-//    }
-
      public List<CategoryJSON> fetchByCategoryNamesByType(String type){
         List<CategoryJSON> catNames = new ArrayList<>();
         if(type.equals("expenses"))
-            catNames = this.categoryRepository.findByCategoryType(CategoryType.EXPENSE)
-                    .stream().filter(categoryEntity -> categoryEntity.getCategoryType() == CategoryType.EXPENSE &&categoryEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid())
-                    .map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName())).collect(Collectors.toList());
+            catNames = this.categoryRepository.findByCategoryTypeAndUserUid(CategoryType.EXPENSE, userService.getLoggedInUser().getUid())
+                    .stream().map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName())).collect(Collectors.toList());
         else if(type.equals("incomes"))
-            catNames = this.categoryRepository.findByCategoryType(CategoryType.INCOME)
-                    .stream().filter(categoryEntity -> categoryEntity.getCategoryType() == CategoryType.INCOME && categoryEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid())
+            catNames =  this.categoryRepository.findByCategoryTypeAndUserUid(CategoryType.INCOME, userService.getLoggedInUser().getUid())
+                    .stream()
                     .map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName())).collect(Collectors.toList());
          return catNames;
      }
 
 
     public Category createCategory(CategoryManipulationRequest categoryRequest) {
-        System.out.println(this.userService.getLoggedInUserEntity().getUid());
        CategoryEntity savedCategory = this.categoryRepository.save( new CategoryEntity(userService.getLoggedInUserEntity(),categoryRequest.getCategoryName(), CategoryType.valueOf(categoryRequest.getCategoryType())));
 
         if (savedCategory.getCid() > 0) return mapToCategory(savedCategory);
@@ -64,13 +57,5 @@ public class CategoryService {
         return new Category( categoryEntity.getCid(), this.userService.getLoggedInUser().getUid(),categoryEntity.getCategoryName(), categoryEntity.getCategoryType().name(),expensesIds, incomesIds);
     }
 
-    private Optional<CategoryEntity> mapToCategoryEntity(CategoryManipulationRequest categoryReq){
-        Optional<CategoryEntity> categoryByName = this.categoryRepository.findByCategoryName(categoryReq.getCategoryName());
-        if(categoryByName.isPresent()){
-            return categoryByName;
-        }else{
-            throw  new ResourceNotFound("No such Category in DB");
-        }
 
-    }
 }

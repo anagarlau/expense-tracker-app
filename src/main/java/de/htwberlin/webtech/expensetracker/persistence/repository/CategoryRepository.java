@@ -13,7 +13,7 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
     List<CategoryEntity> findByCategoryType(CategoryType categoryType);
     Optional<CategoryEntity>findByCategoryName(String categoryName);
     Optional<CategoryEntity> findByCidAndUserUidAndCategoryType(Long cid, Long uid ,CategoryType categoryType);
-
+    List<CategoryEntity> findByCategoryTypeAndUserUid(CategoryType categoryType, Long uid);
     //TODO: findcatby users and update prior methods
     // List<CategoryEntity> findAllBy
 }
