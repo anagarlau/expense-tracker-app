@@ -3,10 +3,14 @@ package de.htwberlin.webtech.expensetracker.persistence.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,7 +20,9 @@ import java.util.List;
 @Entity
 @Table(name="category")
 public class CategoryEntity extends BaseEntity{
-    //TODO: add field expense or transaction mit ENUM
+
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
@@ -28,11 +34,20 @@ public class CategoryEntity extends BaseEntity{
     @Enumerated(value = EnumType.STRING)
     private CategoryType categoryType;
 
+    //dependency to user -> unidirectional?
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private UserEntity user;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy ="category")
-    private List<ExpenseEntity> expenses = new ArrayList<>();
+    private Set<ExpenseEntity> expenses = new HashSet<>();
 
-    public CategoryEntity( String categoryName, CategoryType categoryType) {
+    @OneToMany(fetch = FetchType.EAGER, mappedBy ="category")
+    private Set<IncomeEntity> incomes = new HashSet<>();
 
+    public CategoryEntity(UserEntity user, String categoryName, CategoryType categoryType) {
+        this.user=user;
         this.categoryName = categoryName;
         this.categoryType = categoryType;
     }

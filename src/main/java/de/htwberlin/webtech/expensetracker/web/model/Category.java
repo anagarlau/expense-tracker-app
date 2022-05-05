@@ -19,9 +19,10 @@ import java.util.Set;
 public class Category{
 
     private Long cid;
+    private Long uid;
     private String categoryName;
     private String categoryType;
     private List<Long> expenses= new ArrayList<>();
-
+    private List<Long> incomes = new ArrayList<>();
 
 }

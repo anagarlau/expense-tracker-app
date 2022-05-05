@@ -9,10 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryManipulationRequest {
 
-    private Long id;
+public class CategoryJSON {
+    private Long cid;
     private String categoryName;
-    private String categoryType;
-
 }
