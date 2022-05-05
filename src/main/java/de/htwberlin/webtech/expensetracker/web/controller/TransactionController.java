@@ -5,6 +5,7 @@ import de.htwberlin.webtech.expensetracker.web.model.ExpenseManipulationRequest;
 import de.htwberlin.webtech.expensetracker.web.model.Transaction;
 import de.htwberlin.webtech.expensetracker.web.model.TransactionManipulationRequest;
 import de.htwberlin.webtech.expensetracker.web.service.ExpenseService;
+import de.htwberlin.webtech.expensetracker.web.service.IncomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,13 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class TransactionController {
     private final ExpenseService expenseService;
+    private final IncomeService incomeService;
 
 
     @Autowired
-    public TransactionController(ExpenseService expenseService) {
+    public TransactionController(ExpenseService expenseService, IncomeService incomeService) {
         this.expenseService = expenseService;
+        this.incomeService = incomeService;
     }
 
     //gets all types of transactions
@@ -34,21 +37,26 @@ public class TransactionController {
             transactions = this.expenseService.findAllForLoggedInUser();
         }
         if(transactionType.equals("incomes")){
-            //transactions = this.incomeService.findAllForLoggedInUser()
+             transactions = this.incomeService.findAllForLoggedInUser();
         }
+
+//        if(transactionType.equals("all")){
+//            transactions = this.expenseService.findAllForLoggedInUser()
+//        }
 
         return ResponseEntity.status(HttpStatus.OK).body(transactions);
     }
 
     @PostMapping("/{transactionType}")
-    public ResponseEntity<Void> postTransaction(@PathVariable String transactionType, @RequestBody TransactionManipulationRequest expenseReq) throws URISyntaxException {
+    public ResponseEntity<Void> postTransaction(@PathVariable String transactionType, @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
        Transaction transaction = null;
         if(transactionType.equals("expenses")){
-            transaction = this.expenseService.createExpense(expenseReq);
+            transaction = this.expenseService.createExpense(request);
         }
         if(transactionType.equals("incomes")){
-            //add with incomesService
+           transaction = this.incomeService.createIncome(request);
         }
+
         if (transaction != null) {
             URI uri = new URI("/api/v1/expenses/" + transaction.getId());
             return ResponseEntity.created(uri).build();

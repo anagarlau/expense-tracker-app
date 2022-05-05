@@ -33,10 +33,13 @@ public class ExpenseService {
 
     }
 
+
+    /*all expenses*/
     public List<Transaction> findAllForLoggedInUser() {
         return this.expenseRepository.findByUserUid(userService.getLoggedInUser().getUid())
                 .stream().map(expenseEntity -> mapToExpense(expenseEntity)).collect(Collectors.toList());
     }
+
 
 
     public Expense createExpense(TransactionManipulationRequest expenseRequest) {
@@ -100,7 +103,7 @@ public class ExpenseService {
 
     private Expense mapToExpense(ExpenseEntity expense) {
 
-        Category cat = new Category(expense.getCategory().getCid(), expense.getUser().getUid(),expense.getCategory().getCategoryName(), expense.getCategory().getCategoryType().name(),
+        Category cat = new Category(expense.getCategory().getCid(),expense.getUser().getUid(),expense.getCategory().getCategoryName(), expense.getCategory().getCategoryType().name(),
                 expense.getCategory().getExpenses().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()),
                 expense.getCategory().getIncomes().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()));
         return new Expense(expense.getId(),this.userService.getLoggedInUser().getUid(),cat, expense.getTransactionDate(), expense.getTransactionDescription(), expense.getTransactionTotal());
