@@ -35,14 +35,13 @@ public class CategoryService {
                     .stream().filter(categoryEntity -> categoryEntity.getCategoryType() == CategoryType.EXPENSE).map(cat -> cat.getCategoryName()).collect(Collectors.toList());
         else if(type.equals("incomes"))
             catNames = this.categoryRepository.findByCategoryType(CategoryType.INCOME)
-                    .stream().filter(categoryEntity -> categoryEntity.getCategoryType() == CategoryType.EXPENSE).map(cat -> cat.getCategoryName()).collect(Collectors.toList());
+                    .stream().filter(categoryEntity -> categoryEntity.getCategoryType() == CategoryType.INCOME).map(cat -> cat.getCategoryName()).collect(Collectors.toList());
          return catNames;
      }
 
 
     public Category createCategory(CategoryManipulationRequest categoryRequest) {
-       // CategoryEntity categoryEntity = this.mapToCategoryEntity(categoryRequest) ;
-        CategoryEntity savedCategory = this.categoryRepository.save(new CategoryEntity(categoryRequest.getCategoryName(), CategoryType.valueOf(categoryRequest.getCategoryType())));
+       CategoryEntity savedCategory = this.categoryRepository.save(new CategoryEntity(categoryRequest.getCategoryName(), CategoryType.valueOf(categoryRequest.getCategoryType())));
 
         if (savedCategory.getCid() > 0) return mapToCategory(savedCategory);
         else return null;

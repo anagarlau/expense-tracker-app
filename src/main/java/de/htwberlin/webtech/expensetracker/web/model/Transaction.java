@@ -1,7 +1,5 @@
 package de.htwberlin.webtech.expensetracker.web.model;
 
-import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
-import de.htwberlin.webtech.expensetracker.persistence.entities.WalletEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,11 +12,12 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class WalletTransaction {
+public abstract class Transaction {
     private Long id;
-    private Category category;
 
-    private Wallet wallet;
+    private Long uid;
+
+    private Category category;
 
     private LocalDate transactionDate;
 
@@ -26,9 +25,9 @@ public abstract class WalletTransaction {
 
     private BigDecimal transactionTotal;
 
-    public WalletTransaction(Category category, Wallet wallet, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
+    public Transaction(Category category, Long uid, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
         this.category = category;
-        this.wallet = wallet;
+        this.uid = uid;
         this.transactionDescription = transactionDescription;
         this.transactionTotal = transactionTotal;
         this.transactionDate = transactionDate;

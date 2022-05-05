@@ -15,12 +15,14 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name="expense")
-public class ExpenseEntity extends WalletTransactionEntity {
-    public ExpenseEntity(CategoryEntity categoryEntity, WalletEntity walletEntity, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
-        super(categoryEntity, walletEntity, transactionDescription, transactionTotal, transactionDate);
+public class ExpenseEntity extends TransactionEntity {
+
+
+    public ExpenseEntity(UserEntity user, CategoryEntity categoryEntity,  String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
+        super(user, categoryEntity,  transactionDescription, transactionTotal, transactionDate);
     }
 
-    //TODO: expense and income extend an abstract class WalletTransactionEntity which in turn extends BaseEntity ✔
+    //TODO: expense and income extend an abstract class TransactionEntity which in turn extends BaseEntity ✔
     //TODO: revise MySQL Schema ✔
 
 

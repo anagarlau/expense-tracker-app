@@ -7,6 +7,9 @@ import de.htwberlin.webtech.expensetracker.persistence.repository.UserRepository
 import de.htwberlin.webtech.expensetracker.web.model.User;
 import de.htwberlin.webtech.expensetracker.web.model.UserManipulationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +30,7 @@ public class UserService {
 
     public User createUser(UserManipulationRequest userReq){
         //TODO: handle duplicate emails ✔
-        //TODO: upon registration-> default wallet
+        //TODO: upon registration-> default wallet❓
         if(userRepository.existsByEmail(userReq.getEmail())){
             throw new ItemAlreadyExists("There is already an account under " + userReq.getEmail());
         }
@@ -38,11 +41,28 @@ public class UserService {
         else return null;
     }
 
-    public User findUserById(Long uid){
-        Optional<UserEntity> userById = this.userRepository.findById(uid);
-        return userById.map(userEntity -> mapToUser(userEntity)).orElseThrow(()-> new ResourceNotFound("User" + uid +  " not found "));
+    /*get currently logged-in user*/
+    public User getLoggedInUser(){
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found for email " + email));
+        return mapToUser(userEntity);
     }
+
+    public UserEntity getLoggedInUserEntity(){
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found for email " + email));
+        return userEntity;
+    }
+
+//    public User findUserById(Long uid){
+//        Optional<UserEntity> userById = this.userRepository.findById(uid);
+//        return userById.map(userEntity -> mapToUser(userEntity)).orElseThrow(()-> new ResourceNotFound("User" + uid +  " not found "));
+//
+//    }
 
     private UserEntity mapToUserEntity(UserManipulationRequest userReq){
         return new UserEntity(userReq.getEmail(), userReq.getPassword());

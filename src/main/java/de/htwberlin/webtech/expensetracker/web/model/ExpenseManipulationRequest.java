@@ -1,9 +1,9 @@
 package de.htwberlin.webtech.expensetracker.web.model;
 
 
-public class ExpenseManipulationRequest extends WalletTransactionManipulationRequest{
+public class ExpenseManipulationRequest extends TransactionManipulationRequest {
 
-    //TODO: extends WalletTransactionManipulationRequest
+
 
 
 

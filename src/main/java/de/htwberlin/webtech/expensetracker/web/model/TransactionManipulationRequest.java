@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.MappedSuperclass;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -12,13 +13,16 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WalletManipulationRequest {
 
-    private String walletName;
+public class TransactionManipulationRequest {
 
-    private BigDecimal balance;
+    private Long uid;
 
-    private LocalDate validFrom;
+    private Long cid;
 
-    private LocalDate validUntil;
+    private String transactionDescription;
+
+    private LocalDate transactionDate;
+
+    private BigDecimal transactionTotal;
 }

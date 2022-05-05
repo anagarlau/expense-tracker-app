@@ -1,6 +1,5 @@
 package de.htwberlin.webtech.expensetracker.persistence.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,10 +13,10 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name="income")
-public class IncomeEntity extends  WalletTransactionEntity{
+public class IncomeEntity extends TransactionEntity {
 
 
-    public IncomeEntity(CategoryEntity categoryEntity, WalletEntity walletEntity, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
-        super(categoryEntity, walletEntity, transactionDescription, transactionTotal, transactionDate);
+    public IncomeEntity(UserEntity user,CategoryEntity categoryEntity, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
+        super(user, categoryEntity, transactionDescription, transactionTotal, transactionDate);
     }
 }
