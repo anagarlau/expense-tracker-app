@@ -13,4 +13,5 @@ import lombok.Setter;
 public class CategoryJSON {
     private Long cid;
     private String categoryName;
+    private String categoryType;
 }

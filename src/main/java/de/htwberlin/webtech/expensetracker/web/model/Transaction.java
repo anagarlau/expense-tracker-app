@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class Transaction {
+public class Transaction {
     private Long id;
 
     private Long uid;

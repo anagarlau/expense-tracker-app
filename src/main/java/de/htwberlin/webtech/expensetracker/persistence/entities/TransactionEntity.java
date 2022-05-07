@@ -14,9 +14,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-@MappedSuperclass
+@Entity(name="transaction")
 @EntityListeners(AuditingEntityListener.class)
-public abstract class TransactionEntity extends BaseEntity {
+public  class TransactionEntity extends BaseEntity {
 
     //category
     @ManyToOne(cascade = CascadeType.MERGE)
@@ -32,13 +32,13 @@ public abstract class TransactionEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     protected String transactionDescription;
 
-    @Column( columnDefinition="decimal", precision=5, scale=2)
+    @Column( columnDefinition="decimal", precision=5, scale=2, nullable = false)
     protected BigDecimal transactionTotal;
 
-    @Column
+    @Column(nullable = false)
     protected LocalDate transactionDate;
 
     public TransactionEntity(UserEntity user, CategoryEntity category, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {

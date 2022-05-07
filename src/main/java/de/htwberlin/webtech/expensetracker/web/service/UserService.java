@@ -30,7 +30,6 @@ public class UserService {
 
     public User createUser(UserManipulationRequest userReq){
         //TODO: handle duplicate emails ✔
-        //TODO: upon registration-> default wallet❓
         if(userRepository.existsByEmail(userReq.getEmail())){
             throw new ItemAlreadyExists("There is already an account under " + userReq.getEmail());
         }
@@ -58,11 +57,6 @@ public class UserService {
         return userEntity;
     }
 
-//    public User findUserById(Long uid){
-//        Optional<UserEntity> userById = this.userRepository.findById(uid);
-//        return userById.map(userEntity -> mapToUser(userEntity)).orElseThrow(()-> new ResourceNotFound("User" + uid +  " not found "));
-//
-//    }
 
     private UserEntity mapToUserEntity(UserManipulationRequest userReq){
         return new UserEntity(userReq.getEmail(), userReq.getPassword());

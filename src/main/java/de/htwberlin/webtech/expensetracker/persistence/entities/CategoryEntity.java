@@ -16,9 +16,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity(name="category")
 
-@Entity
-@Table(name="category")
 public class CategoryEntity extends BaseEntity{
 
 
@@ -27,7 +26,7 @@ public class CategoryEntity extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cid;
 
-    @Column
+    @Column(nullable = false)
     private String categoryName;
 
     @Column
@@ -41,10 +40,9 @@ public class CategoryEntity extends BaseEntity{
     private UserEntity user;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy ="category")
-    private Set<ExpenseEntity> expenses = new HashSet<>();
+    private Set<TransactionEntity> transactions = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy ="category")
-    private Set<IncomeEntity> incomes = new HashSet<>();
+
 
     public CategoryEntity(UserEntity user, String categoryName, CategoryType categoryType) {
         this.user=user;

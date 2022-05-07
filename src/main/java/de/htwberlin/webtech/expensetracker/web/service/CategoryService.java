@@ -1,6 +1,5 @@
 package de.htwberlin.webtech.expensetracker.web.service;
 
-import de.htwberlin.webtech.expensetracker.exceptions.ResourceNotFound;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryType;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
@@ -16,26 +15,31 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryService {
     private CategoryRepository categoryRepository;
-    private ExpenseService expenseService;
+    private TransactionService transactionService;
     private UserService userService;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository, ExpenseService expenseService, UserService userService) {
+    public CategoryService(CategoryRepository categoryRepository, TransactionService transactionService, UserService userService) {
         this.categoryRepository = categoryRepository;
-        this.expenseService = expenseService;
+        this.transactionService = transactionService;
         this.userService = userService;
     }
 
 
-     public List<CategoryJSON> fetchByCategoryNamesByType(String type){
+     public List<CategoryJSON> fetchCategoryNamesPerTypeAndUser(String type){
         List<CategoryJSON> catNames = new ArrayList<>();
         if(type.equals("expenses"))
             catNames = this.categoryRepository.findByCategoryTypeAndUserUid(CategoryType.EXPENSE, userService.getLoggedInUser().getUid())
-                    .stream().map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName())).collect(Collectors.toList());
+                    .stream().map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name())).collect(Collectors.toList());
         else if(type.equals("incomes"))
             catNames =  this.categoryRepository.findByCategoryTypeAndUserUid(CategoryType.INCOME, userService.getLoggedInUser().getUid())
                     .stream()
-                    .map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName())).collect(Collectors.toList());
+                    .map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name())).collect(Collectors.toList());
+        else if(type.equals("all"))
+            catNames=this.categoryRepository.findByUserUid(userService.getLoggedInUser().getUid())
+                    .stream()
+                    .map(cat-> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name()))
+                    .collect(Collectors.toList());
          return catNames;
      }
 
@@ -49,9 +53,8 @@ public class CategoryService {
 
 
     private Category mapToCategory(CategoryEntity categoryEntity){
-        List<Long> expensesIds = categoryEntity.getExpenses().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
-        List<Long> incomesIds = categoryEntity.getIncomes().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
-        return new Category( categoryEntity.getCid(), this.userService.getLoggedInUser().getUid(),categoryEntity.getCategoryName(), categoryEntity.getCategoryType().name(),expensesIds, incomesIds);
+        List<Long> transactionIds = categoryEntity.getTransactions().stream().filter(transactionEntity -> transactionEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
+        return new Category( categoryEntity.getCid(), this.userService.getLoggedInUser().getUid(),categoryEntity.getCategoryName(), categoryEntity.getCategoryType().name(),transactionIds);
     }
 
 
