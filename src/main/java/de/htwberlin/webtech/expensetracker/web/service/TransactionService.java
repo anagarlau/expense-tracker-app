@@ -4,10 +4,12 @@ import de.htwberlin.webtech.expensetracker.exceptions.TransactionOutOfBounds;
 import de.htwberlin.webtech.expensetracker.persistence.entities.*;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
 import de.htwberlin.webtech.expensetracker.persistence.repository.TransactionRepository;
+import de.htwberlin.webtech.expensetracker.utils.DateUtils;
 import de.htwberlin.webtech.expensetracker.web.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +29,22 @@ public class TransactionService {
 
     }
 
+
+    public List<Transaction> fetchAllTransactions(LocalDate from, LocalDate to){
+          return this.transactionRepository.findByUserUid(this.userService.getLoggedInUser().getUid())
+                    .stream()
+                    .filter(tr-> DateUtils.isDateInRange(from, to, tr.getTransactionDate()))
+                    .map(tr-> mapToTransaction(tr)).collect(Collectors.toList());
+
+    }
+    public List<Transaction> fetchAllByType(CategoryType categoryType, LocalDate from, LocalDate to){
+        return this.transactionRepository.findByUserUidAndAndCategory_CategoryType(this.userService.getLoggedInUserEntity().getUid(), categoryType)
+                .stream()
+                .filter(tr-> DateUtils.isDateInRange(from, to, tr.getTransactionDate()))
+                .map(tr-> mapToTransaction(tr)).collect(Collectors.toList());
+    }
+
+
     public Transaction fetchTransactionById(Long tid) {
         Optional<TransactionEntity> expenseById =
                 this.transactionRepository.findByIdAndUserUid(tid, this.userService.getLoggedInUserEntity().getUid());
@@ -37,7 +55,9 @@ public class TransactionService {
 
     /*TODO: replace switch with lambda switch */
     public Transaction createTransaction(String transactionType, TransactionManipulationRequest request) {
-        Optional<CategoryEntity> categoryById = request.getCid() == null ? Optional.empty() : this.categoryRepository.findByCidAndUserUidAndCategoryType(request.getCid(), this.userService.getLoggedInUser().getUid(), setCategoryType(transactionType));
+        Optional<CategoryEntity> categoryById =
+                request.getCid() == null ? Optional.empty() :
+                        this.categoryRepository.findByCidAndUserUidAndCategoryType(request.getCid(), this.userService.getLoggedInUser().getUid(), setCategoryType(transactionType));
 
         if (categoryById.isEmpty() ||   request.getTransactionDate() == null  ) {
             throw new ResourceNotFound("Wrong category");
@@ -74,6 +94,8 @@ public class TransactionService {
     }
 
 
+
+    /*Helper Methods*/
     private TransactionEntity mapToTransactionEntity(TransactionManipulationRequest expense) {
         Optional<CategoryEntity> categoryById = categoryRepository.findById(expense.getCid());
         if (categoryById.isPresent() ) {
@@ -96,10 +118,10 @@ public class TransactionService {
     private CategoryType setCategoryType(String transactionType){
         CategoryType toCompare;
         switch (transactionType) {
-            case "expense":
+            case "expenses":
                 toCompare = CategoryType.EXPENSE;
                 break;
-            case "income":
+            case "incomes":
                 toCompare = CategoryType.INCOME;
                 break;
             default:

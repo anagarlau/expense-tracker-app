@@ -1,5 +1,6 @@
 package de.htwberlin.webtech.expensetracker.web.controller;
 
+import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryType;
 import de.htwberlin.webtech.expensetracker.web.model.Transaction;
 import de.htwberlin.webtech.expensetracker.web.model.TransactionManipulationRequest;
 import de.htwberlin.webtech.expensetracker.web.service.TransactionService;
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -51,14 +54,21 @@ public class TransactionController {
         return (updatableTransaction != null) ? ResponseEntity.ok(updatableTransaction) : ResponseEntity.notFound().build();
     }
 
-    /*TODO: kuenftig get by category type in category controller*/
-//    @GetMapping("/{transactionType}")
-//    public ResponseEntity<List<Transaction>> fetchExpenses(@PathVariable String transactionType) {
-//        //all/expenses/incomes
-//        List<Transaction> transactions = new ArrayList<>();
-//
-//        transactions = this.transactionService.findAllForLoggedInUser(transactionType);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(transactions);
-//    }
+
+    /*Transactions by Category Type in Range*/
+    /*TODO: add sorting*/
+    @GetMapping("/transactions")
+    public ResponseEntity<List<Transaction>> fetchTransactionsByCatType(@RequestParam(defaultValue = "false") boolean expense,
+                                                                        @RequestParam(defaultValue = "false") boolean income,
+                                                                        @RequestParam Optional<String> from,
+                                                                        @RequestParam Optional<String> to) {
+        LocalDate lowerBound = LocalDate.parse(from.orElse(LocalDate.MIN.toString()));
+        LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.now().toString()));
+        if (expense == true && income == false)
+            return ResponseEntity.ok(this.transactionService.fetchAllByType(CategoryType.EXPENSE, lowerBound, upperBound));
+        if (income == true && expense == false)
+            return ResponseEntity.ok(this.transactionService.fetchAllByType(CategoryType.INCOME, lowerBound, upperBound));
+        return ResponseEntity.ok(this.transactionService.fetchAllTransactions(lowerBound, upperBound));
+    }
+
 }

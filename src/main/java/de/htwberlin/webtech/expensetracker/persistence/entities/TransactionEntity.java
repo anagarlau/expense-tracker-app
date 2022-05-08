@@ -1,7 +1,6 @@
 package de.htwberlin.webtech.expensetracker.persistence.entities;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
-import de.htwberlin.webtech.expensetracker.web.model.User;
+
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -25,7 +24,6 @@ public  class TransactionEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
 
     @Id

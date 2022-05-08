@@ -34,8 +34,8 @@ public class CategoryEntity extends BaseEntity{
     private CategoryType categoryType;
 
     //dependency to user -> unidirectional?
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uid", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = UserEntity.class)
+    @JoinColumn(name = "uid", referencedColumnName ="uid",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
 

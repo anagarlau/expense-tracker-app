@@ -6,7 +6,32 @@
 </head>
 <body>
 
-<h1 th:text="${greeting}"> </h1>
+<h1 th:text="${greeting}"></h1>
+<h2> Routes </h2>
+
+
+<div>
+    <h2>Auth</h2>
+    <p>Register: /register</p>
+    <p>Login: /login</p>
+</div>
+
+<div>
+    <h3> Transactions: </h3>
+    <p>POST transaction acc to type: /api/v1/:transactiontype (expenses, incomes) </p>
+    <p>GET transaction by Id: /transactions/:TID</p>
+    <p>PATCH transaction by id: /transactions/:TID</p>
+    <p>DELETE transaction by id: TODO </p>
+    <p>GET all transactions by category type(expense, income, all) between 2 dates: /api/v1/transactions?income=BOOLEAN&from=DATESTRING&expense=BOOLEAN&to=DATESTRING </p>
+    <p>GET all transactions in a category by id between two dates: TODO </p>
+</div>
+<div>
+    <h3>Categories</h3>
+    <p> GET list of existing categories and their Ids: /categories/:type (expenses, incomes, all)</p>
+    <p> POST category: /categories</p>
+    <p> PATCH category: TODO</p>
+    <p> DELETE category& all associated transactions: TODO </p>
+</div>
 
 
 </body>

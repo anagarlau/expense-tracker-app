@@ -14,6 +14,6 @@ import java.util.Optional;
 @Repository
 public interface TransactionRepository  extends JpaRepository<TransactionEntity, Long> {
     List<TransactionEntity> findByUserUid(Long uid);
-    Optional<TransactionEntity> findByUserUidAndAndCategory_CategoryType( Long uid, CategoryType catType);
+    List<TransactionEntity> findByUserUidAndAndCategory_CategoryType( Long uid, CategoryType catType);
     Optional<TransactionEntity> findByIdAndUserUid(Long id, Long uid);
 }
