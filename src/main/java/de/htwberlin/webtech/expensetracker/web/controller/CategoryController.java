@@ -1,6 +1,5 @@
 package de.htwberlin.webtech.expensetracker.web.controller;
 
-import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryType;
 import de.htwberlin.webtech.expensetracker.web.model.Category;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryJSON;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest;
@@ -15,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -42,11 +42,20 @@ public class CategoryController {
 
 
     @GetMapping("/categories/{type}")
-    public ResponseEntity<List<CategoryJSON>> fetchById(@PathVariable String type) {
+    public ResponseEntity<List<CategoryJSON>> fetchCatNamesAndCids(@PathVariable String type) {
         List<CategoryJSON> category = this.categoryService.fetchCategoryNamesPerTypeAndUser(type);
         if (category != null) return ResponseEntity.ok(category);
         else return ResponseEntity.badRequest().build();
     }
 
+    @GetMapping("/categories/transactions/{cid}")
+    public ResponseEntity<List<Transaction>> fetchTransactionsInCategory(@PathVariable Long cid,
+                                                                         @RequestParam Optional<String> from,
+                                                                         @RequestParam Optional<String> to){
+        LocalDate lowerBound = LocalDate.parse(from.orElse(LocalDate.MIN.toString()));
+        LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.now().toString()));
+        List<Transaction> transactionsInCid = this.transactionService.fetchAllByCid(cid, lowerBound, upperBound);
+        return  ResponseEntity.ok(transactionsInCid);
+    }
 
 }

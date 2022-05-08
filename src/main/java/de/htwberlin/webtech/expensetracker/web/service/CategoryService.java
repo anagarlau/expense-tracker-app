@@ -6,6 +6,7 @@ import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryReposi
 import de.htwberlin.webtech.expensetracker.web.model.Category;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryJSON;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest;
+import de.htwberlin.webtech.expensetracker.web.model.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -42,6 +43,9 @@ public class CategoryService {
                     .collect(Collectors.toList());
          return catNames;
      }
+
+
+
 
 
     public Category createCategory(CategoryManipulationRequest categoryRequest) {

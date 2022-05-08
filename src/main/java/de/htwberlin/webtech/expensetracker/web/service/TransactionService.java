@@ -30,7 +30,7 @@ public class TransactionService {
     }
 
 
-    public List<Transaction> fetchAllTransactions(LocalDate from, LocalDate to){
+    public List<Transaction> fetchAll(LocalDate from, LocalDate to){
           return this.transactionRepository.findByUserUid(this.userService.getLoggedInUser().getUid())
                     .stream()
                     .filter(tr-> DateUtils.isDateInRange(from, to, tr.getTransactionDate()))
@@ -44,6 +44,16 @@ public class TransactionService {
                 .map(tr-> mapToTransaction(tr)).collect(Collectors.toList());
     }
 
+
+    public List<Transaction> fetchAllByCid(Long cid, LocalDate from, LocalDate to){
+        Long uid = this.userService.getLoggedInUserEntity().getUid();
+        Optional<CategoryEntity> catById = this.categoryRepository.findByCidAndUserUid(cid, uid);
+         CategoryEntity categoryEntity = catById.orElseThrow(() -> new ResourceNotFound("Category with ID " + cid + " not found for User " + uid));
+         return categoryEntity.getTransactions()
+                 .stream()
+                 .filter(tr->DateUtils.isDateInRange(from, to, tr.getTransactionDate()))
+                 .map(tr-> mapToTransaction(tr)).collect(Collectors.toList());
+    }
 
     public Transaction fetchTransactionById(Long tid) {
         Optional<TransactionEntity> expenseById =

@@ -5,14 +5,12 @@ import de.htwberlin.webtech.expensetracker.web.model.Transaction;
 import de.htwberlin.webtech.expensetracker.web.model.TransactionManipulationRequest;
 import de.htwberlin.webtech.expensetracker.web.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +55,7 @@ public class TransactionController {
 
     /*Transactions by Category Type in Range*/
     /*TODO: add sorting*/
+    /*TODO: Date parsing acc to format*/
     @GetMapping("/transactions")
     public ResponseEntity<List<Transaction>> fetchTransactionsByCatType(@RequestParam(defaultValue = "false") boolean expense,
                                                                         @RequestParam(defaultValue = "false") boolean income,
@@ -68,7 +67,9 @@ public class TransactionController {
             return ResponseEntity.ok(this.transactionService.fetchAllByType(CategoryType.EXPENSE, lowerBound, upperBound));
         if (income == true && expense == false)
             return ResponseEntity.ok(this.transactionService.fetchAllByType(CategoryType.INCOME, lowerBound, upperBound));
-        return ResponseEntity.ok(this.transactionService.fetchAllTransactions(lowerBound, upperBound));
+        return ResponseEntity.ok(this.transactionService.fetchAll(lowerBound, upperBound));
     }
+
+
 
 }

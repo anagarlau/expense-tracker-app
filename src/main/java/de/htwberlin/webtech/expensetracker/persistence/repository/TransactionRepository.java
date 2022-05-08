@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 /*TODO: ADD SORTING*/
 
 @Repository
@@ -16,4 +17,5 @@ public interface TransactionRepository  extends JpaRepository<TransactionEntity,
     List<TransactionEntity> findByUserUid(Long uid);
     List<TransactionEntity> findByUserUidAndAndCategory_CategoryType( Long uid, CategoryType catType);
     Optional<TransactionEntity> findByIdAndUserUid(Long id, Long uid);
+    Optional<TransactionEntity> findByCategoryCidIn(Set<Long> cids);
 }
