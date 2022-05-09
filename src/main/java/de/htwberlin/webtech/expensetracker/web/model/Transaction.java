@@ -25,11 +25,5 @@ public class Transaction {
 
     private BigDecimal transactionTotal;
 
-    public Transaction(Category category, Long uid, String transactionDescription, BigDecimal transactionTotal, LocalDate transactionDate) {
-        this.category = category;
-        this.uid = uid;
-        this.transactionDescription = transactionDescription;
-        this.transactionTotal = transactionTotal;
-        this.transactionDate = transactionDate;
-    }
+
 }

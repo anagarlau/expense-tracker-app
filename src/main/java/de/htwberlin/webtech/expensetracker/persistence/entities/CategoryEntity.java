@@ -29,7 +29,7 @@ public class CategoryEntity extends BaseEntity{
     @Column(nullable = false)
     private String categoryName;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private CategoryType categoryType;
 

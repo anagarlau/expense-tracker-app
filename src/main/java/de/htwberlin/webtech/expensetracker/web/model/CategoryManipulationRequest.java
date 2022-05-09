@@ -5,18 +5,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryManipulationRequest {
-    private Long id;
-    private Long uid;
+
+    @NotBlank
+    @Size(min=3, message="Name must be at least 3 characters long")
     private String categoryName;
+
+    @NotBlank
+    @Size(min=6, message="Description must be at least 6 characters long: INCOME or EXPENSE")
     private String categoryType;
 
-    public CategoryManipulationRequest(String categoryName, String categoryType) {
-        this.categoryName = categoryName;
-        this.categoryType = categoryType;
-    }
+
 }

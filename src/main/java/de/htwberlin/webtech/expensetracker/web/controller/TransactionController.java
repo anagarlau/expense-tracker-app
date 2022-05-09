@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,7 +39,7 @@ public class TransactionController {
 
     /*TODO: current balance in response senden*/
     @PostMapping("/{transactionType}")
-    public ResponseEntity<IBalance> postTransaction(@PathVariable String transactionType, @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
+    public ResponseEntity<IBalance> postTransaction(@PathVariable String transactionType, @Valid  @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
         Transaction transaction = this.transactionService.createTransaction(transactionType, request);
         if (transaction != null) {
             URI uri = new URI("/api/v1/expenses/" + transaction.getId());
@@ -55,7 +56,7 @@ public class TransactionController {
     }
 
     @PatchMapping("/transactions/{tid}")
-    public ResponseEntity<IBalance> updateExpense( @RequestBody TransactionManipulationRequest request, @PathVariable(value = "tid") Long tid){
+    public ResponseEntity<IBalance> updateExpense(@Valid @RequestBody TransactionManipulationRequest request, @PathVariable(value = "tid") Long tid){
        Transaction updatableTransaction = this.transactionService.update(tid, request);
         return (updatableTransaction != null) ? ResponseEntity.ok(this.transactionService.calculateBalance()) : ResponseEntity.notFound().build();
     }

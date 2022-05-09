@@ -61,9 +61,9 @@ public class TransactionService {
 
     public Transaction fetchTransactionById(Long tid) {
         Long uid = this.userService.getLoggedInUserEntity().getUid();
-        Optional<TransactionEntity> expenseById =
+        Optional<TransactionEntity> transaction =
                 this.transactionRepository.findByIdAndUserUid(tid, uid);
-        return expenseById.map(expenseEntity -> mapToTransaction(expenseEntity)).orElseThrow(() -> new ResourceNotFound("Expense not found"));
+        return transaction.map(transactionEntity -> mapToTransaction(transactionEntity)).orElseThrow(() -> new ResourceNotFound("Expense not found"));
 
     }
 
@@ -77,9 +77,9 @@ public class TransactionService {
 
         if (categoryById.isEmpty()) throw new ResourceNotFound("Wrong category");
          TransactionEntity transactionEntity =
-                new TransactionEntity(this.userService.getLoggedInUserEntity(), categoryById.get(), request.getTransactionDescription(), request.getTransactionTotal(), request.getTransactionDate());
-        TransactionEntity savedExpense = this.transactionRepository.save(transactionEntity);
-        if (savedExpense != null && savedExpense.getId() > 0) return mapToTransaction(savedExpense);
+                new TransactionEntity(this.userService.getLoggedInUserEntity(), categoryById.get(), request.getTransactionDescription(), request.getTransactionTotal(), LocalDate.parse(request.getTransactionDate()));
+        TransactionEntity transaction = this.transactionRepository.save(transactionEntity);
+        if (transaction != null && transaction.getId() > 0) return mapToTransaction(transaction);
         else return null;
 
     }
@@ -89,16 +89,16 @@ public class TransactionService {
         Long uid = this.userService.getLoggedInUserEntity().getUid();
         Optional<TransactionEntity> toBeUpdatedById = this.transactionRepository.findByIdAndUserUid(id, uid);
         if (toBeUpdatedById.isPresent()) {
-            TransactionEntity expenseEntity = toBeUpdatedById.get();
-            expenseEntity.setTransactionDescription(request.getTransactionDescription() != null ? request.getTransactionDescription() : expenseEntity.getTransactionDescription());
-            expenseEntity.setTransactionTotal(request.getTransactionTotal() != null ? request.getTransactionTotal() : expenseEntity.getTransactionTotal());
-            expenseEntity.setTransactionDate(request.getTransactionDate() != null ? request.getTransactionDate() : expenseEntity.getTransactionDate());
+            TransactionEntity transactionEntity = toBeUpdatedById.get();
+            transactionEntity.setTransactionDescription(request.getTransactionDescription() != null ? request.getTransactionDescription() : transactionEntity.getTransactionDescription());
+            transactionEntity.setTransactionTotal(request.getTransactionTotal() != null ? request.getTransactionTotal() : transactionEntity.getTransactionTotal());
+            transactionEntity.setTransactionDate(request.getTransactionDate() != null ? LocalDate.parse(request.getTransactionDate()) : transactionEntity.getTransactionDate());
             if (request.getCid() != null) {
                 Optional<CategoryEntity> catById = this.categoryRepository.findByCidAndUserUid(request.getCid(), uid);
                 if (catById.isEmpty()) throw new ResourceNotFound("Category " + request.getCid() + " does not exist");
-                else expenseEntity.setCategory(catById.orElse(expenseEntity.getCategory()));
+                else transactionEntity.setCategory(catById.orElse(transactionEntity.getCategory()));
             }
-            TransactionEntity savedEntity = this.transactionRepository.save(expenseEntity);
+            TransactionEntity savedEntity = this.transactionRepository.save(transactionEntity);
             return mapToTransaction(savedEntity);
         } else {
             return null;
@@ -107,11 +107,11 @@ public class TransactionService {
 
 
     /*Helper Methods*/
-    private TransactionEntity mapToTransactionEntity(TransactionManipulationRequest expense) {
-        Optional<CategoryEntity> categoryById = categoryRepository.findById(expense.getCid());
+    private TransactionEntity mapToTransactionEntity(TransactionManipulationRequest request) {
+        Optional<CategoryEntity> categoryById = categoryRepository.findById(request.getCid());
         if (categoryById.isPresent()) {
             UserEntity loggedInUserEntity = userService.getLoggedInUserEntity();
-            return new TransactionEntity(loggedInUserEntity, categoryById.get(), expense.getTransactionDescription(), expense.getTransactionTotal(), expense.getTransactionDate());
+            return new TransactionEntity(loggedInUserEntity, categoryById.get(), request.getTransactionDescription(), request.getTransactionTotal(), LocalDate.parse(request.getTransactionDate()));
         } else {
             return null;
         }
@@ -119,11 +119,11 @@ public class TransactionService {
     }
 
 
-    private Transaction mapToTransaction(TransactionEntity expense) {
+    private Transaction mapToTransaction(TransactionEntity transactionEntity) {
 
-        Category cat = new Category(expense.getCategory().getCid(), expense.getUser().getUid(), expense.getCategory().getCategoryName(), expense.getCategory().getCategoryType().name(),
-                expense.getCategory().getTransactions().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()));
-        return new Expense(expense.getId(), this.userService.getLoggedInUser().getUid(), cat, expense.getTransactionDate(), expense.getTransactionDescription(), expense.getTransactionTotal());
+        Category cat = new Category(transactionEntity.getCategory().getCid(), transactionEntity.getUser().getUid(), transactionEntity.getCategory().getCategoryName(), transactionEntity.getCategory().getCategoryType().name(),
+                transactionEntity.getCategory().getTransactions().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()));
+        return new Transaction(transactionEntity.getId(), this.userService.getLoggedInUser().getUid(), cat, transactionEntity.getTransactionDate(), transactionEntity.getTransactionDescription(), transactionEntity.getTransactionTotal());
 
     }
 

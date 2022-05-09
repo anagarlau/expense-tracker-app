@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public class CategoryController {
 
 
     @PostMapping("/categories")
-    public ResponseEntity<Void> addCategory(@RequestBody CategoryManipulationRequest categoryReq) throws URISyntaxException {
+    public ResponseEntity<Void> addCategory(@Valid @RequestBody CategoryManipulationRequest categoryReq) throws URISyntaxException {
         Category category = this.categoryService.createCategory(categoryReq);
         if (category != null) {
             URI uri = new URI("/api/v1/categories/" + category.getCid());
