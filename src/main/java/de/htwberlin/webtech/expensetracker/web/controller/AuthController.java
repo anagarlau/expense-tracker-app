@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 public class AuthController {
     private  UserService userService;
@@ -23,6 +25,11 @@ public class AuthController {
         this.authenticationManager=authenticationManager;
 
     }
+
+
+
+
+
 
     @RequestMapping (value = "/login", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PATCH})
     public ResponseEntity<Void> login(@RequestBody UserManipulationRequest loginRequest){

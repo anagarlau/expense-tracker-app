@@ -1,13 +1,13 @@
 package de.htwberlin.webtech.expensetracker.web.controller;
 
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryType;
-import de.htwberlin.webtech.expensetracker.web.model.Transaction;
-import de.htwberlin.webtech.expensetracker.web.model.TransactionManipulationRequest;
+import de.htwberlin.webtech.expensetracker.web.model.*;
 import de.htwberlin.webtech.expensetracker.web.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -26,30 +26,38 @@ public class TransactionController {
 
     }
 
+
+
+    @GetMapping("/balance")
+    public ResponseEntity<IBalance> displayBalance(){
+        IBalance bigDecimal = transactionService.calculateBalance();
+       bigDecimal = bigDecimal == null ? bigDecimal = new Balance(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO) : bigDecimal;
+        return ResponseEntity.ok(bigDecimal);
+    }
+
+
     /*TODO: current balance in response senden*/
     @PostMapping("/{transactionType}")
-    public ResponseEntity<Void> postTransaction(@PathVariable String transactionType, @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
-        Transaction transaction = null;
-        transaction = this.transactionService.createTransaction(transactionType, request);
+    public ResponseEntity<IBalance> postTransaction(@PathVariable String transactionType, @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
+        Transaction transaction = this.transactionService.createTransaction(transactionType, request);
         if (transaction != null) {
             URI uri = new URI("/api/v1/expenses/" + transaction.getId());
-            return ResponseEntity.created(uri).build();
+            IBalance balance = this.transactionService.calculateBalance();
+            return ResponseEntity.created(uri).body(balance);
         } else return ResponseEntity.badRequest().build();
 
     }
-    /*TODO: REVISE*/
+
     @GetMapping("/transactions/{tid}")
     public ResponseEntity<Transaction> fetchExpenseById( @PathVariable Long tid) {
-        Transaction transaction = null;
-        transaction = this.transactionService.fetchTransactionById(tid);
+        Transaction transaction = this.transactionService.fetchTransactionById(tid);
         return (transaction != null) ? ResponseEntity.ok(transaction) : ResponseEntity.notFound().build();
     }
 
     @PatchMapping("/transactions/{tid}")
-    public ResponseEntity<Transaction> updateExpense( @RequestBody TransactionManipulationRequest request, @PathVariable(value = "tid") Long tid) throws URISyntaxException {
-        Transaction updatableTransaction = null;
-        updatableTransaction = this.transactionService.update(tid, request);
-        return (updatableTransaction != null) ? ResponseEntity.ok(updatableTransaction) : ResponseEntity.notFound().build();
+    public ResponseEntity<IBalance> updateExpense( @RequestBody TransactionManipulationRequest request, @PathVariable(value = "tid") Long tid){
+       Transaction updatableTransaction = this.transactionService.update(tid, request);
+        return (updatableTransaction != null) ? ResponseEntity.ok(this.transactionService.calculateBalance()) : ResponseEntity.notFound().build();
     }
 
 

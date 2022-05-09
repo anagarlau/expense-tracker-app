@@ -30,6 +30,12 @@ public class TransactionService {
     }
 
 
+
+    public IBalance calculateBalance(){
+          return this.transactionRepository.sumAcrossCategory(userService.getLoggedInUserEntity().getUid());
+    }
+
+
     public List<Transaction> fetchAll(LocalDate from, LocalDate to){
           return this.transactionRepository.findByUserUid(this.userService.getLoggedInUser().getUid())
                     .stream()
@@ -56,8 +62,9 @@ public class TransactionService {
     }
 
     public Transaction fetchTransactionById(Long tid) {
+        Long uid = this.userService.getLoggedInUserEntity().getUid();
         Optional<TransactionEntity> expenseById =
-                this.transactionRepository.findByIdAndUserUid(tid, this.userService.getLoggedInUserEntity().getUid());
+                this.transactionRepository.findByIdAndUserUid(tid, uid);
         return expenseById.map(expenseEntity ->  mapToTransaction(expenseEntity)).orElseThrow(() -> new ResourceNotFound("Expense not found"));
 
     }
@@ -65,6 +72,7 @@ public class TransactionService {
 
     /*TODO: replace switch with lambda switch */
     public Transaction createTransaction(String transactionType, TransactionManipulationRequest request) {
+
         Optional<CategoryEntity> categoryById =
                 request.getCid() == null ? Optional.empty() :
                         this.categoryRepository.findByCidAndUserUidAndCategoryType(request.getCid(), this.userService.getLoggedInUser().getUid(), setCategoryType(transactionType));
@@ -82,17 +90,16 @@ public class TransactionService {
     }
 
 
-
-
     public Transaction update(Long id, TransactionManipulationRequest request) {
-        Optional<TransactionEntity> toBeUpdatedById = this.transactionRepository.findByIdAndUserUid(id, this.userService.getLoggedInUserEntity().getUid());
+        Long uid = this.userService.getLoggedInUserEntity().getUid();
+        Optional<TransactionEntity> toBeUpdatedById = this.transactionRepository.findByIdAndUserUid(id, uid);
         if (toBeUpdatedById.isPresent()) {
              TransactionEntity expenseEntity = toBeUpdatedById.get();
              expenseEntity.setTransactionDescription(request.getTransactionDescription() != null ? request.getTransactionDescription() : expenseEntity.getTransactionDescription());
              expenseEntity.setTransactionTotal(request.getTransactionTotal() != null ? request.getTransactionTotal() : expenseEntity.getTransactionTotal());
              expenseEntity.setTransactionDate(request.getTransactionDate() != null ? request.getTransactionDate() : expenseEntity.getTransactionDate());
             if (request.getCid() != null) {
-                Optional<CategoryEntity> catById = this.categoryRepository.findByCidAndUserUid(request.getCid(), this.userService.getLoggedInUserEntity().getUid());
+                Optional<CategoryEntity> catById = this.categoryRepository.findByCidAndUserUid(request.getCid(), uid);
                 if(catById.isEmpty()) throw new TransactionOutOfBounds("Wrong category");
                 else expenseEntity.setCategory(catById.orElse(expenseEntity.getCategory()));
             }
@@ -109,7 +116,8 @@ public class TransactionService {
     private TransactionEntity mapToTransactionEntity(TransactionManipulationRequest expense) {
         Optional<CategoryEntity> categoryById = categoryRepository.findById(expense.getCid());
         if (categoryById.isPresent() ) {
-            return new TransactionEntity(userService.getLoggedInUserEntity(), categoryById.get(), expense.getTransactionDescription(), expense.getTransactionTotal(), expense.getTransactionDate() );
+            UserEntity loggedInUserEntity = userService.getLoggedInUserEntity();
+            return new TransactionEntity(loggedInUserEntity, categoryById.get(), expense.getTransactionDescription(), expense.getTransactionTotal(), expense.getTransactionDate() );
         } else {
             return null;
         }

@@ -8,6 +8,7 @@ class ExpensetrackerApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
