@@ -1,5 +1,4 @@
 package de.htwberlin.webtech.expensetracker.web.controller;
-
 import de.htwberlin.webtech.expensetracker.web.model.Category;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryJSON;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest;
@@ -54,7 +53,6 @@ public class CategoryController {
                                                                          @RequestParam Optional<String> to){
         LocalDate lowerBound = LocalDate.parse(from.orElse(LocalDate.MIN.toString()));
         LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.now().toString()));
-
         List<Transaction> transactionsInCid = this.transactionService.fetchAllByCid(cid, lowerBound, upperBound);
         return  ResponseEntity.ok(transactionsInCid);
     }

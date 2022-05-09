@@ -30,7 +30,7 @@ public class TransactionController {
 
     @GetMapping("/balance")
     public ResponseEntity<IBalance> displayBalance(){
-        IBalance bigDecimal = transactionService.calculateBalance();
+       IBalance bigDecimal = transactionService.calculateBalance();
        bigDecimal = bigDecimal == null ? bigDecimal = new Balance(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO) : bigDecimal;
         return ResponseEntity.ok(bigDecimal);
     }
