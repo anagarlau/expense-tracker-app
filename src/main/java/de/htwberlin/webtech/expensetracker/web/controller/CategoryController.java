@@ -1,8 +1,5 @@
 package de.htwberlin.webtech.expensetracker.web.controller;
-import de.htwberlin.webtech.expensetracker.web.model.Category;
-import de.htwberlin.webtech.expensetracker.web.model.CategoryJSON;
-import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest;
-import de.htwberlin.webtech.expensetracker.web.model.Transaction;
+import de.htwberlin.webtech.expensetracker.web.model.*;
 import de.htwberlin.webtech.expensetracker.web.service.CategoryService;
 import de.htwberlin.webtech.expensetracker.web.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +53,15 @@ public class CategoryController {
         LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.now().toString()));
         List<Transaction> transactionsInCid = this.transactionService.fetchAllByCid(cid, lowerBound, upperBound);
         return  ResponseEntity.ok(transactionsInCid);
+    }
+
+    @DeleteMapping("/categories/{cid}")
+    public ResponseEntity<IBalance> deleteCategoryAndTransactions(@PathVariable  Long cid){
+        boolean isDeleted = this.categoryService.deleteCategory(cid);
+        if (isDeleted) {
+            IBalance balance = this.transactionService.calculateBalance();
+            return ResponseEntity.ok().body(balance);
+        } else return ResponseEntity.badRequest().build();
     }
 
 }

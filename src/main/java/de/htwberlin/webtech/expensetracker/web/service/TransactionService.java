@@ -1,4 +1,5 @@
 package de.htwberlin.webtech.expensetracker.web.service;
+
 import de.htwberlin.webtech.expensetracker.exceptions.ResourceNotFound;
 import de.htwberlin.webtech.expensetracker.persistence.entities.*;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
@@ -7,6 +8,8 @@ import de.htwberlin.webtech.expensetracker.utils.DateUtils;
 import de.htwberlin.webtech.expensetracker.web.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +32,9 @@ public class TransactionService {
 
 
     public IBalance calculateBalance() {
-        return this.transactionRepository.sumAcrossCategory(userService.getLoggedInUserEntity().getUid());
+        IBalance iBalance = this.transactionRepository.sumAcrossCategory(userService.getLoggedInUserEntity().getUid());
+        iBalance = iBalance == null ? iBalance = new Balance(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO) : iBalance;
+        return iBalance;
     }
 
 
@@ -76,7 +81,7 @@ public class TransactionService {
                         this.categoryRepository.findByCidAndUserUidAndCategoryType(request.getCid(), this.userService.getLoggedInUser().getUid(), setCategoryType(transactionType));
 
         if (categoryById.isEmpty()) throw new ResourceNotFound("Wrong category");
-         TransactionEntity transactionEntity =
+        TransactionEntity transactionEntity =
                 new TransactionEntity(this.userService.getLoggedInUserEntity(), categoryById.get(), request.getTransactionDescription(), request.getTransactionTotal(), LocalDate.parse(request.getTransactionDate()));
         TransactionEntity transaction = this.transactionRepository.save(transactionEntity);
         if (transaction != null && transaction.getId() > 0) return mapToTransaction(transaction);
@@ -105,6 +110,15 @@ public class TransactionService {
         }
     }
 
+
+    public boolean deleteTransaction(Long tid) {
+        Optional<TransactionEntity> transaction = this.transactionRepository.findByIdAndUserUid(tid, userService.getLoggedInUserEntity().getUid());
+        if(transaction.isEmpty()) {
+            throw new ResourceNotFound("Transaction " + tid + " does not exist in DB");
+        }
+        transactionRepository.deleteById(tid);
+        return true;
+    }
 
     /*Helper Methods*/
     private TransactionEntity mapToTransactionEntity(TransactionManipulationRequest request) {

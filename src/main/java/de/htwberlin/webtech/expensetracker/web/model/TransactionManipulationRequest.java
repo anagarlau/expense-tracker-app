@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
@@ -13,10 +12,7 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class TransactionManipulationRequest {
-
-
 
     @NotNull(message = "cid must not be null")
     @Digits(integer=3,fraction=0, message = "Please provide a valid integer")

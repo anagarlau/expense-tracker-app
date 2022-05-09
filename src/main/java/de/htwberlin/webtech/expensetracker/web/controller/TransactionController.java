@@ -32,7 +32,7 @@ public class TransactionController {
     @GetMapping("/balance")
     public ResponseEntity<IBalance> displayBalance(){
        IBalance bigDecimal = transactionService.calculateBalance();
-       bigDecimal = bigDecimal == null ? bigDecimal = new Balance(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO) : bigDecimal;
+
         return ResponseEntity.ok(bigDecimal);
     }
 
@@ -42,7 +42,7 @@ public class TransactionController {
     public ResponseEntity<IBalance> postTransaction(@PathVariable String transactionType, @Valid  @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
         Transaction transaction = this.transactionService.createTransaction(transactionType, request);
         if (transaction != null) {
-            URI uri = new URI("/api/v1/expenses/" + transaction.getId());
+            URI uri = new URI("/api/v1/transactions/" + transaction.getId());
             IBalance balance = this.transactionService.calculateBalance();
             return ResponseEntity.created(uri).body(balance);
         } else return ResponseEntity.badRequest().build();
@@ -80,5 +80,13 @@ public class TransactionController {
     }
 
 
+    @DeleteMapping("/transactions/{tid}")
+    public ResponseEntity<IBalance> deleteTransaction(@PathVariable Long tid){
+        boolean isDeleted = this.transactionService.deleteTransaction(tid);
+        if (isDeleted) {
+            IBalance balance = this.transactionService.calculateBalance();
+            return ResponseEntity.ok().body(balance);
+        } else return ResponseEntity.badRequest().build();
+    }
 
 }

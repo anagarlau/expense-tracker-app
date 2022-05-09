@@ -1,8 +1,10 @@
 package de.htwberlin.webtech.expensetracker.web.service;
 
+import de.htwberlin.webtech.expensetracker.exceptions.ResourceNotFound;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryEntity;
 import de.htwberlin.webtech.expensetracker.persistence.entities.CategoryType;
 import de.htwberlin.webtech.expensetracker.persistence.repository.CategoryRepository;
+import de.htwberlin.webtech.expensetracker.persistence.repository.TransactionRepository;
 import de.htwberlin.webtech.expensetracker.web.model.Category;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryJSON;
 import de.htwberlin.webtech.expensetracker.web.model.CategoryManipulationRequest;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,12 +21,14 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
     private TransactionService transactionService;
     private UserService userService;
+    private TransactionRepository transactionRepository;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository, TransactionService transactionService, UserService userService) {
+    public CategoryService(CategoryRepository categoryRepository, TransactionService transactionService, UserService userService, TransactionRepository transactionRepository) {
         this.categoryRepository = categoryRepository;
         this.transactionService = transactionService;
         this.userService = userService;
+        this.transactionRepository=transactionRepository;
     }
 
 
@@ -53,6 +58,17 @@ public class CategoryService {
 
         if (savedCategory.getCid() > 0) return mapToCategory(savedCategory);
         else return null;
+    }
+
+    public boolean deleteCategory(Long cid){
+        Optional<CategoryEntity> byCidAndUserUid = this.categoryRepository.findByCidAndUserUid(cid, userService.getLoggedInUserEntity().getUid());
+        if(byCidAndUserUid.isEmpty()){
+            throw new ResourceNotFound("Category " + cid + " does not exist in DB");
+        }else{
+            this.transactionRepository.deleteAll(byCidAndUserUid.get().getTransactions());
+            this.categoryRepository.deleteById(cid);
+            return true;
+        }
     }
 
 

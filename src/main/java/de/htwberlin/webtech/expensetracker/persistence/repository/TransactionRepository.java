@@ -36,6 +36,7 @@ public interface TransactionRepository  extends JpaRepository<TransactionEntity,
 
 
 
+
 //    @Query(value = "SELECT sum(t.transactionTotal) as balance from transaction t where t.user.uid =?1 group by t.category.categoryType having t.category.categoryType='INCOME'")
 //    BigDecimal sumIncomeTransactionTotalByCategoryType(Long uid);
 //    @Query(value = "SELECT sum(t.transactionTotal) as balance from transaction t where t.user.uid =?1 group by t.category.categoryType having t.category.categoryType='EXPENSE'")
