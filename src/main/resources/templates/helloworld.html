@@ -20,15 +20,15 @@
 <div>
     <h3> Transactions: </h3>
     <p>POST transaction acc to CATEGORYTYPE: /api/v1/:transactiontype (args: expenses, incomes) -> Returns the new balance </p>
-    <p>GET transaction by TID: /transactions/:TID</p>
-    <p>PATCH transaction by TID: /transactions/:TID  -> Returns the new balance</p>
+    <p>GET transaction by TID: /api/v1/transactions/:TID</p>
+    <p>PATCH transaction by TID: /api/v1/transactions/:TID  -> Returns the new balance</p>
     <p>DELETE transaction by TID : /api/v1/transactions/1 -> Returns the new balance </p>
     <p>GET all transactions by category type(expense, income, all) between 2 dates: /api/v1/transactions?income=BOOLEAN&expense=BOOLEAN&from=DATESTRING&to=DATESTRING </p>
     <p>GET all transactions in a category by CID between two dates: /api/v1/categories/transactions/:CID?from=DATESTRING&to=DATESTRING </p>
 </div>
 <div>
     <h3>Categories</h3>
-    <p> GET list of existing categories and their Ids: /categories/:type (expenses, incomes, all)</p>
+    <p> GET list of existing categories and their Ids: /api/v1/categories/:type (expenses, incomes, all)</p>
     <p> POST category: /categories</p>
     <p> DELETE category & all associated transactions: /api/v1/categories/:CID  -> Returns the new balance </p>
 </div>

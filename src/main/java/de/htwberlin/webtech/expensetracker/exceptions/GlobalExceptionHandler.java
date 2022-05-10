@@ -43,14 +43,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       }
 
     /*handles 500s internal server errors*/
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorModel> handlesNonSpecificExceptions(Exception ex, WebRequest req){
-//        ErrorModel error = new ErrorModel();
-//        error.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//        error.getErrorMessage().add(ex.getMessage());
-//        error.setErrorType(ex.getClass().getTypeName());
-//        return ResponseEntity.internalServerError().body(error);
-//     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorModel> handlesNonSpecificExceptions(Exception ex, WebRequest req){
+        ErrorModel error = new ErrorModel();
+        error.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.getErrorMessage().add(ex.getMessage());
+        error.setErrorType(ex.getClass().getTypeName());
+        return ResponseEntity.internalServerError().body(error);
+     }
 
     /*customize validation error message*/
 
