@@ -71,11 +71,12 @@ public class TransactionController {
                                                                         @RequestParam Optional<String> to) {
         LocalDate lowerBound = LocalDate.parse(from.orElse(LocalDate.MIN.toString()));
         LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.MAX.toString()));
-        if (expense == true && income == false)
+        if (expense && !income)
             return ResponseEntity.ok(this.transactionService.fetchAllByType(CategoryType.EXPENSE, lowerBound, upperBound));
-        if (income == true && expense == false)
+        else if (income&& !expense)
             return ResponseEntity.ok(this.transactionService.fetchAllByType(CategoryType.INCOME, lowerBound, upperBound));
-        return ResponseEntity.ok(this.transactionService.fetchAll(lowerBound, upperBound));
+        else
+            return ResponseEntity.ok(this.transactionService.fetchAll(lowerBound, upperBound));
     }
 
 
