@@ -50,7 +50,7 @@ public class CategoryController {
                                                                          @RequestParam Optional<String> from,
                                                                          @RequestParam Optional<String> to){
         LocalDate lowerBound = LocalDate.parse(from.orElse(LocalDate.MIN.toString()));
-        LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.now().toString()));
+        LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.MAX.toString()));
         List<Transaction> transactionsInCid = this.transactionService.fetchAllByCid(cid, lowerBound, upperBound);
         return  ResponseEntity.ok(transactionsInCid);
     }

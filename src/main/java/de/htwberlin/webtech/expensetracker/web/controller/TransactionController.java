@@ -32,7 +32,6 @@ public class TransactionController {
     @GetMapping("/balance")
     public ResponseEntity<IBalance> displayBalance(){
        IBalance bigDecimal = transactionService.calculateBalance();
-
         return ResponseEntity.ok(bigDecimal);
     }
 
@@ -71,7 +70,7 @@ public class TransactionController {
                                                                         @RequestParam Optional<String> from,
                                                                         @RequestParam Optional<String> to) {
         LocalDate lowerBound = LocalDate.parse(from.orElse(LocalDate.MIN.toString()));
-        LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.now().toString()));
+        LocalDate upperBound = LocalDate.parse(to.orElse(LocalDate.MAX.toString()));
         if (expense == true && income == false)
             return ResponseEntity.ok(this.transactionService.fetchAllByType(CategoryType.EXPENSE, lowerBound, upperBound));
         if (income == true && expense == false)
