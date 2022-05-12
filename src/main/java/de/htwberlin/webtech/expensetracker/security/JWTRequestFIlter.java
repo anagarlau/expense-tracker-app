@@ -1,8 +1,10 @@
 package de.htwberlin.webtech.expensetracker.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +12,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.persistence.Column;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,6 @@ import java.io.IOException;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
-@NoArgsConstructor
 public class JWTRequestFIlter extends OncePerRequestFilter {
     private JWTUtil jwtUtil;
     private CustomUserDetailsService userDetailsService;

@@ -1,8 +1,11 @@
 package de.htwberlin.webtech.expensetracker.security;
 
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -11,14 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+
 @Component
-@Slf4j
+@PropertySource(value = "classpath:application.yml")
+@RequiredArgsConstructor
+
 public class JWTUtil {
-    @Value("${JWT_EXPIRATION_IN_MS}")
-    private int JWT_EXPIRATION_IN_MS;
     /*token signature ✔*/
-    @Value("${JWT_SECRET}")
+    @Value("secret")
     private String JWT_SECRET;
+    private int JWT_EXPIRATION_IN_MS = 120000;
+
 
     /*token generation ✔*/
     public String generateToken(UserDetails userDetails) {
