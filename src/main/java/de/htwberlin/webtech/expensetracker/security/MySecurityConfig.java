@@ -36,7 +36,10 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .permitAll()
                 .and().authorizeRequests()
-                .and().httpBasic();
+                .and()
+                //.formLogin();
+                .httpBasic();
+        //https://github.com/DanielW1987/spring-boot-blueprint
 
 
     }

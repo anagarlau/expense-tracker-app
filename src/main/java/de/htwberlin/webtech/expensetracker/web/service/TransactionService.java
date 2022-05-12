@@ -80,8 +80,10 @@ public class TransactionService {
                                      this.categoryRepository.findByCidAndUserUidAndCategoryType(request.getCid(), this.userService.getLoggedInUser().getUid(), setCategoryType(transactionType));
 
         if (categoryById.isEmpty()) throw new ResourceNotFound("Wrong category");
+
+        LocalDate transactionDate = request.getTransactionDate();
         TransactionEntity transactionEntity =
-                new TransactionEntity(this.userService.getLoggedInUserEntity(), categoryById.get(), request.getTransactionDescription(), request.getTransactionTotal(), request.getTransactionDate());
+                new TransactionEntity(this.userService.getLoggedInUserEntity(), categoryById.get(), request.getTransactionDescription(), request.getTransactionTotal(), transactionDate);
         TransactionEntity transaction = this.transactionRepository.save(transactionEntity);
         if (transaction != null && transaction.getId() > 0) return mapToTransaction(transaction);
         else return null;

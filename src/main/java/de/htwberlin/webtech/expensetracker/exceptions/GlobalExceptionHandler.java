@@ -1,9 +1,10 @@
 package de.htwberlin.webtech.expensetracker.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,12 +12,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -28,19 +25,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         error.getErrorMessage().add(ex.getMessage());
          error.setErrorType(ex.getClass().getTypeName());
          return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-        //return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+
     }
 
 
-    /*handles 400 bad requests MethodArgumentTypeMismatchException - Spring ready-made exception*/
+    /*handles 400s MethodArgumentTypeMismatchException - Spring ready-made exception*/
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorModel> handlesMismatchExceptions(MethodArgumentTypeMismatchException ex, WebRequest req){
-        ErrorModel error = new ErrorModel();
+         ErrorModel error = new ErrorModel();
         error.setStatusCode(HttpStatus.BAD_REQUEST.value());
         error.getErrorMessage().add(ex.getMessage());
         error.setErrorType(ex.getClass().getTypeName());
         return ResponseEntity.badRequest().body(error);
       }
+
+
 
     /*handles 500s internal server errors*/
     @ExceptionHandler(Exception.class)
@@ -53,7 +52,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      }
 
     /*customize validation error message*/
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         ErrorModel responseBody = new ErrorModel();
@@ -62,4 +60,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         responseBody.setErrorType("Validation Error");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
       }
+
+     /*handles JSON parse errors and marks my first stackoverflow contribution 🎂*/
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ErrorModel responseBody = new ErrorModel();
+        responseBody.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        responseBody.getErrorMessage().add(ex.getMessage());
+        responseBody.setErrorType(ex.getClass().getTypeName());
+        return ResponseEntity.badRequest().body(responseBody);
+    }
 }
