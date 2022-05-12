@@ -27,3 +27,7 @@ spring:
     init:
       platform: mysql
       mode: always
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-in-ms: ${JWT_EXPIRATION_IN_MS}
