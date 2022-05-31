@@ -51,10 +51,11 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<User> saveUser(@RequestBody UserManipulationRequest userReq) {
+    public ResponseEntity<JWTResponse> saveUser(@RequestBody UserManipulationRequest userReq) throws Exception {
         User newUser = this.userService.createUser(userReq);
         if(newUser !=null){
-          return ResponseEntity.ok(newUser);
+        //  return ResponseEntity.ok(newUser);
+            return this.login(userReq);
         }
         return ResponseEntity.badRequest().build();
     }

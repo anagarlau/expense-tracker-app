@@ -24,7 +24,7 @@ public class JWTUtil {
     @Value("secret")
     private String JWT_SECRET;
     private int JWT_EXPIRATION_IN_MS = 120000;
-
+    //Integer
 
     /*token generation ✔*/
     public String generateToken(UserDetails userDetails) {
