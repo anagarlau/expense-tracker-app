@@ -45,16 +45,19 @@ public class AuthController {
         final UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequest.getEmail());
         final String token = jwtUtil.generateToken(userDetails);
         /*return token*/
-        return ResponseEntity.ok().body(new JWTResponse(token));
+        return ResponseEntity.ok(new JWTResponse(token));
     }
 
 
 
     @PostMapping("/register")
-    public ResponseEntity<User> saveUser(@RequestBody UserManipulationRequest userReq) {
+    public ResponseEntity<JWTResponse> saveUser(@RequestBody UserManipulationRequest userReq) {
         User newUser = this.userService.createUser(userReq);
         if(newUser !=null){
-       return ResponseEntity.ok(newUser);
+            final UserDetails userDetails = customUserDetailsService.loadUserByUsername(newUser.getEmail());
+            final String token = jwtUtil.generateToken(userDetails);
+      // return ResponseEntity.ok(newUser);
+         return ResponseEntity.ok(new JWTResponse(token));
         }
         return ResponseEntity.badRequest().build();
     }
