@@ -2,10 +2,12 @@ package de.htwberlin.webtech.expensetracker.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class JWTResponse {
-     private final String jwtToken;
+     private String jwtToken;
 
 }
