@@ -6,7 +6,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /*CORS enabling*/
-/*add heroku link*/
 @Configuration
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
@@ -14,6 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedMethods("*")
-                .allowedOrigins("http://localhost:3000");
+                .allowedOrigins("http://localhost:3000",
+                        "https://expensetracker22-frontend.herokuapp.com");
     }
 }
