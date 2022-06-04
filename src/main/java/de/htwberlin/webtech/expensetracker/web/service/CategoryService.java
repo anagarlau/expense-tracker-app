@@ -54,9 +54,14 @@ public class CategoryService {
 
 
     public Category createCategory(CategoryManipulationRequest categoryRequest) {
-       CategoryEntity savedCategory = this.categoryRepository.save( new CategoryEntity(userService.getLoggedInUserEntity(),categoryRequest.getCategoryName(), CategoryType.valueOf(categoryRequest.getCategoryType())));
+        List<CategoryEntity> byUserUid = this.categoryRepository.findByUserUid(this.userService.getLoggedInUser().getUid());
+        List<CategoryEntity> duplicates = byUserUid.stream().filter(categoryEntity -> categoryEntity.getCategoryName().toLowerCase().equals(categoryRequest.getCategoryName().toLowerCase())).collect(Collectors.toList());
+        if(duplicates.isEmpty()){
+            CategoryEntity savedCategory = this.categoryRepository.save( new CategoryEntity(userService.getLoggedInUserEntity(),categoryRequest.getCategoryName(), CategoryType.valueOf(categoryRequest.getCategoryType())));
+            if (savedCategory.getCid() > 0) return mapToCategory(savedCategory);
+            else return null;
+        }
 
-        if (savedCategory.getCid() > 0) return mapToCategory(savedCategory);
         else return null;
     }
 

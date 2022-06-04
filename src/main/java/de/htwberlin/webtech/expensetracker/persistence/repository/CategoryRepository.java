@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
-    List<CategoryEntity> findByCategoryType(CategoryType categoryType);
-    Optional<CategoryEntity>findByCategoryName(String categoryName);
+    List<CategoryEntity> findByCategoryType( CategoryType categoryType);
+    Optional<CategoryEntity>findByUserUidAndCategoryName(Long uid,String categoryName);
     Optional<CategoryEntity> findByCidAndUserUidAndCategoryType(Long cid, Long uid ,CategoryType categoryType);
     List<CategoryEntity> findByCategoryTypeAndUserUid(CategoryType categoryType, Long uid);
     List<CategoryEntity> findByUserUid(Long uid);
