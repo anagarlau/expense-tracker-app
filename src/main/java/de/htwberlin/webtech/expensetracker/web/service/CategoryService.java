@@ -51,7 +51,7 @@ public class CategoryService {
 
 
 
-
+//
 
     public Category createCategory(CategoryManipulationRequest categoryRequest) {
         List<CategoryEntity> byUserUid = this.categoryRepository.findByUserUid(this.userService.getLoggedInUser().getUid());
