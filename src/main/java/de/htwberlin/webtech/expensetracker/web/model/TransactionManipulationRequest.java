@@ -30,7 +30,7 @@ public class TransactionManipulationRequest {
     private String transactionDescription;
 
     @NotNull(message = "Date must not be blank")
-    @PastOrPresent(message = "Date must be either in the past or in the present")
+  //  @PastOrPresent(message = "Date must be either in the past or in the present")
 //    @JsonDeserialize(using = LocalDateDeserializer.class)
 //    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate transactionDate;
