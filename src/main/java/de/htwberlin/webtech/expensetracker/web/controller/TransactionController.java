@@ -38,12 +38,12 @@ public class TransactionController {
 
     /*TODO: current balance in response senden*/
     @PostMapping("/{transactionType}")
-    public ResponseEntity<IBalance> postTransaction(@PathVariable String transactionType, @Valid  @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
+    public ResponseEntity<Transaction> postTransaction(@PathVariable String transactionType, @Valid  @RequestBody TransactionManipulationRequest request) throws URISyntaxException {
         Transaction transaction = this.transactionService.createTransaction(transactionType, request);
         if (transaction != null) {
-            URI uri = new URI("/api/v1/transactions/" + transaction.getId());
-            IBalance balance = this.transactionService.calculateBalance();
-            return ResponseEntity.created(uri).body(balance);
+//            URI uri = new URI("/api/v1/transactions/" + transaction.getId());
+//            IBalance balance = this.transactionService.calculateBalance();
+            return ResponseEntity.ok(transaction);
         } else return ResponseEntity.badRequest().build();
 
     }
@@ -55,9 +55,10 @@ public class TransactionController {
     }
 
     @PatchMapping("/transactions/{tid}")
-    public ResponseEntity<IBalance> updateExpense(@Valid @RequestBody TransactionManipulationRequest request, @PathVariable(value = "tid") Long tid){
+    public ResponseEntity<Transaction> updateExpense(@Valid @RequestBody TransactionManipulationRequest request, @PathVariable(value = "tid") Long tid){
        Transaction updatableTransaction = this.transactionService.update(tid, request);
-        return (updatableTransaction != null) ? ResponseEntity.ok(this.transactionService.calculateBalance()) : ResponseEntity.notFound().build();
+      //  return (updatableTransaction != null) ? ResponseEntity.ok(this.transactionService.calculateBalance()) : ResponseEntity.notFound().build();
+        return (updatableTransaction != null) ? ResponseEntity.ok(updatableTransaction) : ResponseEntity.notFound().build();
     }
 
 
