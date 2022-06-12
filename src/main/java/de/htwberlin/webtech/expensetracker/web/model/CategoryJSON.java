@@ -14,4 +14,5 @@ public class CategoryJSON {
     private Long cid;
     private String categoryName;
     private String categoryType;
+    private String icon;
 }

@@ -36,15 +36,15 @@ public class CategoryService {
         List<CategoryJSON> catNames = new ArrayList<>();
         if(type.equals("expenses"))
             catNames = this.categoryRepository.findByCategoryTypeAndUserUid(CategoryType.EXPENSE, userService.getLoggedInUser().getUid())
-                    .stream().map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name())).collect(Collectors.toList());
+                    .stream().map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name(), cat.getIcon())).collect(Collectors.toList());
         else if(type.equals("incomes"))
             catNames =  this.categoryRepository.findByCategoryTypeAndUserUid(CategoryType.INCOME, userService.getLoggedInUser().getUid())
                     .stream()
-                    .map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name())).collect(Collectors.toList());
+                    .map(cat -> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name(), cat.getIcon())).collect(Collectors.toList());
         else if(type.equals("all"))
             catNames=this.categoryRepository.findByUserUid(userService.getLoggedInUser().getUid())
                     .stream()
-                    .map(cat-> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name()))
+                    .map(cat-> new CategoryJSON(cat.getCid(), cat.getCategoryName(), cat.getCategoryType().name(), cat.getIcon()))
                     .collect(Collectors.toList());
          return catNames;
      }
@@ -57,7 +57,7 @@ public class CategoryService {
         List<CategoryEntity> byUserUid = this.categoryRepository.findByUserUid(this.userService.getLoggedInUser().getUid());
         List<CategoryEntity> duplicates = byUserUid.stream().filter(categoryEntity -> categoryEntity.getCategoryName().toLowerCase().equals(categoryRequest.getCategoryName().toLowerCase())).collect(Collectors.toList());
         if(duplicates.isEmpty()){
-            CategoryEntity savedCategory = this.categoryRepository.save( new CategoryEntity(userService.getLoggedInUserEntity(),categoryRequest.getCategoryName(), CategoryType.valueOf(categoryRequest.getCategoryType())));
+            CategoryEntity savedCategory = this.categoryRepository.save( new CategoryEntity(userService.getLoggedInUserEntity(),categoryRequest.getCategoryName(),CategoryType.valueOf(categoryRequest.getCategoryType()), categoryRequest.getIcon()));
             if (savedCategory.getCid() > 0) return mapToCategory(savedCategory);
             else return null;
         }
@@ -79,7 +79,7 @@ public class CategoryService {
 
     private Category mapToCategory(CategoryEntity categoryEntity){
         List<Long> transactionIds = categoryEntity.getTransactions().stream().filter(transactionEntity -> transactionEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList());
-        return new Category( categoryEntity.getCid(), this.userService.getLoggedInUser().getUid(),categoryEntity.getCategoryName(), categoryEntity.getCategoryType().name(),transactionIds);
+        return new Category( categoryEntity.getCid(), this.userService.getLoggedInUser().getUid(),categoryEntity.getCategoryName(), categoryEntity.getCategoryType().name(),transactionIds, categoryEntity.getIcon());
     }
 
 

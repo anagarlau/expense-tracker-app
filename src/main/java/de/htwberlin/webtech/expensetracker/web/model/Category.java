@@ -22,7 +22,8 @@ public class Category{
     private Long uid;
     private String categoryName;
     private String categoryType;
-    private List<Long> transactions= new ArrayList<>();
 
+    private List<Long> transactions= new ArrayList<>();
+    private String icon;
 
 }

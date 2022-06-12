@@ -30,6 +30,9 @@ public class CategoryEntity extends BaseEntity{
     private String categoryName;
 
     @Column(nullable = false)
+    private String icon;
+
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private CategoryType categoryType;
 
@@ -44,10 +47,11 @@ public class CategoryEntity extends BaseEntity{
 
 
 
-    public CategoryEntity(UserEntity user, String categoryName, CategoryType categoryType) {
+    public CategoryEntity(UserEntity user, String categoryName, CategoryType categoryType, String icon) {
         this.user=user;
         this.categoryName = categoryName;
         this.categoryType = categoryType;
+        this.icon=icon;
     }
 
 

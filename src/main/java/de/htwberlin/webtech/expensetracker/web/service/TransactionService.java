@@ -138,8 +138,15 @@ public class TransactionService {
 
     private Transaction mapToTransaction(TransactionEntity transactionEntity) {
 
-        Category cat = new Category(transactionEntity.getCategory().getCid(), transactionEntity.getUser().getUid(), transactionEntity.getCategory().getCategoryName(), transactionEntity.getCategory().getCategoryType().name(),
-                transactionEntity.getCategory().getTransactions().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()));
+        Category cat =
+
+                new Category(transactionEntity.getCategory().getCid(),
+                        transactionEntity.getUser().getUid(),
+                        transactionEntity.getCategory().getCategoryName(),
+                        transactionEntity.getCategory().getCategoryType().name(),
+                             transactionEntity.getCategory().getTransactions().stream().filter(expenseEntity -> expenseEntity.getUser().getUid() == this.userService.getLoggedInUser().getUid()).map(expenseEntity -> expenseEntity.getId()).collect(Collectors.toList()),
+                            transactionEntity.getCategory().getIcon()
+                );
         return new Transaction(transactionEntity.getId(), this.userService.getLoggedInUser().getUid(), cat, transactionEntity.getTransactionDate(), transactionEntity.getTransactionDescription(), transactionEntity.getTransactionTotal());
 
     }
