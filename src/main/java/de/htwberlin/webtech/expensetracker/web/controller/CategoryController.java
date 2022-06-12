@@ -27,11 +27,11 @@ public class CategoryController {
 
 
     @PostMapping("/categories")
-    public ResponseEntity<Void> addCategory(@Valid @RequestBody CategoryManipulationRequest categoryReq) throws URISyntaxException {
+    public ResponseEntity<Category> addCategory(@Valid @RequestBody CategoryManipulationRequest categoryReq) throws URISyntaxException {
         Category category = this.categoryService.createCategory(categoryReq);
         if (category != null) {
             URI uri = new URI("/api/v1/categories/" + category.getCid());
-            return ResponseEntity.created(uri).build();
+            return ResponseEntity.ok(category);
         }
         return ResponseEntity.badRequest().build();
     }
