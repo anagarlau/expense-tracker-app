@@ -58,11 +58,11 @@ public class UserService {
     }
 
 
-    private UserEntity mapToUserEntity(UserManipulationRequest userReq){
+    public UserEntity mapToUserEntity(UserManipulationRequest userReq){
         return new UserEntity(userReq.getEmail(), userReq.getPassword());
     }
 
-    private User mapToUser(UserEntity user){
+    public User mapToUser(UserEntity user){
         return new User(user.getUid(), user.getEmail());
     }
 }
